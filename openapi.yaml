@@ -33,8 +33,13 @@ tags:
       * `pdf` - Portable Document Format
       * `htm / html` - HTML Document
       * `txt` - Plain Text Document
-      * `xlf / xliff` - XLIFF Document, version 2.1
+      * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)
       * `srt` - SRT Document
+      * `idml` - Adobe InDesign Markup Language
+      * `xml` - XML Document
+      * `json` - JSON Document
+      * `dita` - DITA topic (Darwin Information Typing Architecture)
+      * `mif` - Adobe FrameMaker Interchange Format
       * `jpeg` / `jpg` / `png` - Image (currently in beta)
 - name: RephraseText
   description: |-
@@ -872,8 +877,13 @@ paths:
                       * `pdf` - Portable Document Format
                       * `htm / html` - HTML Document
                       * `txt` - Plain Text Document
-                      * `xlf / xliff` - XLIFF Document, version 2.1
+                      * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)
                       * `srt` - SRT Document
+                      * `idml` - Adobe InDesign Markup Language
+                      * `xml` - XML Document
+                      * `json` - JSON Document
+                      * `dita` - DITA topic (Darwin Information Typing Architecture)
+                      * `mif` - Adobe FrameMaker Interchange Format
                       * `jpeg` / `jpg` / `png` - Image (currently in beta)
                 filename:
                   type: string
