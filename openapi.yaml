@@ -1337,6 +1337,8 @@ paths:
                         target_lang: EN
                         entry_count: 2
                     creation_time: '2021-08-03T14:16:18.329Z'
+        400:
+          $ref: '#/components/responses/BadRequestGlossaries'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -1390,6 +1392,8 @@ paths:
                     target_lang: EN
                     entry_count: 2
                 creation_time: '2021-08-03T14:16:18.429Z'
+        400:
+          $ref: '#/components/responses/BadRequestGlossaries'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -1547,7 +1551,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GlossaryDictionary'
+                type: object
+                properties:
+                  dictionaries:
+                    description: The dictionaries of the glossary, each with its entries in the requested format.
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MultilingualGlossaryEntries'
         400:
           $ref: '#/components/responses/BadRequestGlossaries'
         401:
@@ -2678,6 +2688,8 @@ paths:
                       - zh
                       segment_count: 23
                     total_count: 2
+        400:
+          $ref: '#/components/responses/BadRequest'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -2730,6 +2742,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/StyleRuleList'
+        400:
+          $ref: '#/components/responses/BadRequest'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -2843,6 +2857,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StyleRuleList'
+        400:
+          $ref: '#/components/responses/BadRequest'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -2920,6 +2936,8 @@ paths:
           headers:
             X-Trace-ID:
               $ref: '#/components/headers/X-Trace-ID'
+        400:
+          $ref: '#/components/responses/BadRequest'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -3074,6 +3092,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomInstruction'
+        400:
+          $ref: '#/components/responses/BadRequest'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -3173,6 +3193,8 @@ paths:
           headers:
             X-Trace-ID:
               $ref: '#/components/headers/X-Trace-ID'
+        400:
+          $ref: '#/components/responses/BadRequest'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -5296,6 +5318,10 @@ components:
           $ref: '#/components/schemas/GlossaryEntries'
         entries_format:
           $ref: '#/components/schemas/GlossaryEntriesFormat'
+        entry_count:
+          allOf:
+            - $ref: '#/components/schemas/GlossaryEntryCount'
+          readOnly: true
     GlossaryEntries:
       type: string
       description: The entries of the glossary. The entries have to be specified
@@ -5598,6 +5624,16 @@ components:
           description: The number of segments stored in the translation memory.
           type: integer
           example: 34
+        creation_time:
+          description: 'The creation time of the translation memory in the ISO 8601-1:2019 format (e.g.: `2021-08-03T14:16:18.329Z`).'
+          type: string
+          format: date-time
+          example: '2026-04-01T16:34:25.223Z'
+        updated_time:
+          description: 'The time of the last update to the translation memory in the ISO 8601-1:2019 format (e.g.: `2021-08-03T14:16:18.329Z`).'
+          type: string
+          format: date-time
+          example: '2026-04-01T16:34:25.264Z'
     TranslationMemoryId:
       type: string
       format: uuid
@@ -5772,6 +5808,22 @@ components:
           type: integer
           format: int64
           example: 1250000
+        document_count:
+          description: Documents translated so far in the current billing period. Only present for accounts with a document limit.
+          type: integer
+          format: int64
+        document_limit:
+          description: Current maximum number of documents that can be translated per billing period. Only present for accounts with a document limit.
+          type: integer
+          format: int64
+        team_document_count:
+          description: Documents translated by all users in the team so far in the current billing period. Only present for accounts with a team document limit.
+          type: integer
+          format: int64
+        team_document_limit:
+          description: Current maximum number of documents that can be translated by the team per billing period. Only present for accounts with a team document limit.
+          type: integer
+          format: int64
         products:
           type: array
           description: Only present for API Pro users. Per-product usage details.

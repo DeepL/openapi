@@ -1752,6 +1752,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestGlossaries"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -1835,6 +1838,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestGlossaries"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -2086,7 +2092,16 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GlossaryDictionary"
+                  "type": "object",
+                  "properties": {
+                    "dictionaries": {
+                      "description": "The dictionaries of the glossary, each with its entries in the requested format.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MultilingualGlossaryEntries"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -3783,6 +3798,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -3864,6 +3882,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -4040,6 +4061,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -4163,6 +4187,9 @@
                 "$ref": "#/components/headers/X-Trace-ID"
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -4407,6 +4434,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -4560,6 +4590,9 @@
                 "$ref": "#/components/headers/X-Trace-ID"
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -7403,6 +7436,14 @@
           },
           "entries_format": {
             "$ref": "#/components/schemas/GlossaryEntriesFormat"
+          },
+          "entry_count": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GlossaryEntryCount"
+              }
+            ],
+            "readOnly": true
           }
         }
       },
@@ -7744,6 +7785,18 @@
             "description": "The number of segments stored in the translation memory.",
             "type": "integer",
             "example": 34
+          },
+          "creation_time": {
+            "description": "The creation time of the translation memory in the ISO 8601-1:2019 format (e.g.: `2021-08-03T14:16:18.329Z`).",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-01T16:34:25.223Z"
+          },
+          "updated_time": {
+            "description": "The time of the last update to the translation memory in the ISO 8601-1:2019 format (e.g.: `2021-08-03T14:16:18.329Z`).",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-01T16:34:25.264Z"
           }
         }
       },
@@ -7917,6 +7970,26 @@
             "type": "integer",
             "format": "int64",
             "example": 1250000
+          },
+          "document_count": {
+            "description": "Documents translated so far in the current billing period. Only present for accounts with a document limit.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "document_limit": {
+            "description": "Current maximum number of documents that can be translated per billing period. Only present for accounts with a document limit.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "team_document_count": {
+            "description": "Documents translated by all users in the team so far in the current billing period. Only present for accounts with a team document limit.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "team_document_limit": {
+            "description": "Current maximum number of documents that can be translated by the team per billing period. Only present for accounts with a team document limit.",
+            "type": "integer",
+            "format": "int64"
           },
           "products": {
             "type": "array",
