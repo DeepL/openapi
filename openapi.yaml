@@ -601,7 +601,7 @@ paths:
                     example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                 style_id:
                   description: |-
-                    Specify the [style rule list](/api-reference/style-rules) to use for the translation.
+                    Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.
 
                     **Important:**  The target language has to match the language of the style rule list.
 
@@ -916,7 +916,7 @@ paths:
                     example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                 style_id:
                   description: |-
-                    Specify the [style rule list](/api-reference/style-rules) to use for the translation.
+                    Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.
 
                     **Important:** The target language has to match the language of the style rule list.
                   type: string
@@ -2216,7 +2216,7 @@ paths:
       summary: Retrieve Supported Languages
       description: |-
         **Deprecated.** Use `GET /v3/languages?resource=translate_text` (or the appropriate resource)
-        instead. See the [migration guide](https://developers.deepl.com/api-reference/languages/migrate-from-v2-languages)
+        instead. See the [migration guide](https://developers.deepl.com/docs/languages/migrating-from-v2-languages)
         for details.
       operationId: getLanguagesV2
       parameters:
@@ -5166,7 +5166,7 @@ components:
             - `tsv` (default) - tab-separated values
             - `csv` - comma-separated values
 
-            See [Supported Glossary Formats](/api-reference/multilingual-glossaries#formats) for details about each format.
+            See [Supported Glossary Formats](/docs/customize/managing-glossaries#entry-formats) for details about each format.
           type: string
           enum:
           - tsv
@@ -5333,7 +5333,7 @@ components:
         - `tsv` (default) - tab-separated values
         - `csv` - comma-separated values
 
-        See [Supported Glossary Formats](/api-reference/multilingual-glossaries#formats) for details about each format.
+        See [Supported Glossary Formats](/docs/customize/managing-glossaries#entry-formats) for details about each format.
       type: string
       enum:
       - tsv
@@ -5593,7 +5593,7 @@ components:
         Language of the text to be translated. If this parameter is omitted, the API will attempt to
         detect the language of the text and translate it.
 
-        For the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-resource).
+        For the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/docs/languages/using-the-languages-api).
       example: EN
     TranslationMemory:
       type: object
@@ -5773,7 +5773,7 @@ components:
       description: |-
         The language into which the text should be translated.
 
-        For the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-resource).
+        For the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/docs/languages/using-the-languages-api).
       example: DE
     TargetLanguageWrite:
       type: string
