@@ -2351,6 +2351,325 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
+  /v3/spoken-terms:
+    post:
+      tags:
+        - ManageSpokenTerms
+      summary: Create Spoken Terms collection
+      operationId: createSpokenTerms
+      description: Create a new Spoken Terms collection with one or more term lists. Each term list contains terms for a single language.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSpokenTermsParameters'
+            examples:
+              Basic:
+                value:
+                  name: Technical Terms
+                  term_lists:
+                    - lang: en
+                      entries: "DeepL\nAPI\nwebhook"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateSpokenTermsParameters'
+      responses:
+        201:
+          description: Successfully created Spoken Terms collection.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpokenTerms'
+        400:
+          $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenSpokenTerms'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        456:
+          $ref: '#/components/responses/QuotaExceededSpokenTerms'
+      security:
+        - auth_header: [ ]
+    get:
+      tags:
+        - ManageSpokenTerms
+      summary: List all Spoken Terms collections
+      operationId: listSpokenTerms
+      description: List all Spoken Terms collections and their metadata, but not the actual terms.
+      responses:
+        200:
+          description: JSON object containing all Spoken Terms collections.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  spoken_terms:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SpokenTerms'
+              example:
+                spoken_terms:
+                  - spoken_terms_id: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
+                    name: Technical Terms
+                    term_lists:
+                      - lang: en
+                        entry_count: 3
+                    creation_time: '2025-08-03T14:16:18.329Z'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenSpokenTerms'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+      security:
+        - auth_header: [ ]
+  /v3/spoken-terms/{spoken_terms_id}:
+    get:
+      tags:
+        - ManageSpokenTerms
+      summary: Retrieve Spoken Terms collection details
+      description: Retrieve metadata for a Spoken Terms collection, including term list information but not the actual terms.
+      operationId: getSpokenTerms
+      parameters:
+        - $ref: '#/components/parameters/SpokenTermsID'
+      responses:
+        200:
+          description: JSON object containing the Spoken Terms metadata.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpokenTerms'
+              example:
+                spoken_terms_id: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
+                name: Technical Terms
+                term_lists:
+                  - lang: en
+                    entry_count: 3
+                creation_time: '2025-08-03T14:16:18.329Z'
+        400:
+          $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenSpokenTerms'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+      security:
+        - auth_header: [ ]
+    patch:
+      tags:
+        - ManageSpokenTerms
+      summary: Edit Spoken Terms collection details
+      description: Update the name of a Spoken Terms collection or merge new entries into an existing term list.
+      operationId: patchSpokenTerms
+      parameters:
+        - $ref: '#/components/parameters/SpokenTermsID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchSpokenTermsParameters'
+            examples:
+              UpdateName:
+                value:
+                  name: Updated Technical Terms
+              MergeEntries:
+                value:
+                  term_lists:
+                    - lang: en
+                      entries: "authentication\nendpoint"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchSpokenTermsParameters'
+      responses:
+        200:
+          description: Successfully updated Spoken Terms collection.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpokenTerms'
+        400:
+          $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenSpokenTerms'
+        404:
+          $ref: '#/components/responses/NotFound'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+      security:
+        - auth_header: [ ]
+    delete:
+      tags:
+        - ManageSpokenTerms
+      summary: Delete Spoken Terms collection
+      description: Delete the entire Spoken Terms collection.
+      operationId: deleteSpokenTerms
+      parameters:
+        - $ref: '#/components/parameters/SpokenTermsID'
+      responses:
+        204:
+          description: Successfully deleted Spoken Terms collection.
+        400:
+          $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenSpokenTerms'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+      security:
+        - auth_header: [ ]
+  /v3/spoken-terms/{spoken_terms_id}/entries:
+    get:
+      tags:
+        - ManageSpokenTerms
+      summary: Retrieve Spoken Terms entries
+      description: Retrieve the actual terms for a specific language from a Spoken Terms collection.
+      operationId: getSpokenTermsEntries
+      parameters:
+        - $ref: '#/components/parameters/SpokenTermsID'
+        - name: lang
+          in: query
+          required: true
+          description: The language code (ISO 639-1) for the term list to retrieve.
+          schema:
+            type: string
+            example: en
+      responses:
+        200:
+          description: JSON object containing the term list entries.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpokenTermsEntries'
+              example:
+                lang: en
+                entries: "DeepL\nAPI\nwebhook"
+        400:
+          $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenSpokenTerms'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+      security:
+        - auth_header: [ ]
+  /v3/spoken-terms/{spoken_terms_id}/term-lists:
+    put:
+      tags:
+        - ManageSpokenTerms
+      summary: Replace or create a term list
+      description: Replace an existing term list for a language, or create a new one if it doesn't exist.
+      operationId: putSpokenTermsList
+      parameters:
+        - $ref: '#/components/parameters/SpokenTermsID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutSpokenTermsListParameters'
+            examples:
+              Basic:
+                value:
+                  lang: en
+                  entries: "DeepL\nAPI\nwebhook\nintegration"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PutSpokenTermsListParameters'
+      responses:
+        200:
+          description: Successfully replaced or created term list.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpokenTermsList'
+        400:
+          $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenSpokenTerms'
+        404:
+          $ref: '#/components/responses/NotFound'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+      security:
+        - auth_header: [ ]
+    delete:
+      tags:
+        - ManageSpokenTerms
+      summary: Delete a term list
+      description: Delete a term list for a specific language from the Spoken Terms collection.
+      operationId: deleteSpokenTermsList
+      parameters:
+        - $ref: '#/components/parameters/SpokenTermsID'
+        - name: lang
+          in: query
+          required: true
+          description: The language code (ISO 639-1) for the term list to delete.
+          schema:
+            type: string
+            example: en
+      responses:
+        204:
+          description: Successfully deleted term list.
+        400:
+          $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenSpokenTerms'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+      security:
+        - auth_header: [ ]
   /v3/languages/resources:
     get:
       tags:
@@ -3269,7 +3588,7 @@ paths:
                   glossary_id: 'def3a26b-3e84-45b3-84ae-0c0aaf3525f7'
                   formality: 'formal'
               with_spoken_terms:
-                summary: With spoken terms to inform transcription
+                summary: With Spoken Terms to inform transcription
                 value:
                   source_media_content_type: 'audio/pcm; encoding=s16le; rate=16000'
                   source_language: 'en'
@@ -3736,6 +4055,13 @@ components:
       required: true
       schema:
         type: string
+    SpokenTermsID:
+      name: spoken_terms_id
+      description: A unique ID assigned to the Spoken Terms collection.
+      in: path
+      required: true
+      schema:
+        type: string
     SourceLanguage:
       name: source_lang
       in: query
@@ -3852,6 +4178,38 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
     QuotaExceededGlossaries:
       description: Quota exceeded. Too many requests were made to the glossary endpoints recently.
+    BadRequestSpokenTerms:
+      description: Bad request. Please check error message and your parameters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: "Bad request"
+    ForbiddenSpokenTerms:
+      description: Forbidden. Authorization failed or feature not available for your plan.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: "Forbidden. Authorization failed or feature not available for your plan."
+    QuotaExceededSpokenTerms:
+      description: Quota exceeded. Spoken Terms collection limit reached for your plan.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: "Spoken Terms quota exhausted"
+    UnsupportedMediaType:
+      description: Unsupported Media Type. Must be application/json or application/x-www-form-urlencoded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: "Unsupported Content-Type"
     InternalServerError:
       description: Internal error.
     ServiceUnavailable:
@@ -5429,7 +5787,7 @@ components:
     SpokenTermsId:
       type: string
       format: uuid
-      description: (beta) The ID of a spoken terms list used to inform transcription.
+      description: (beta) The ID of a Spoken Terms collection used to inform transcription.
       example: 7c4f1080-cfe2-41d4-8269-0e6ec15a0354
     ModelType:
       type: string
@@ -5552,6 +5910,108 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GlossaryDictionary'
+    CreateSpokenTermsParameters:
+      type: object
+      required:
+        - name
+        - term_lists
+      properties:
+        name:
+          description: Name for the Spoken Terms collection.
+          type: string
+          maxLength: 1024
+          example: Technical Terms
+        term_lists:
+          description: Array of term lists, one per language.
+          type: array
+          items:
+            $ref: '#/components/schemas/SpokenTermsListInput'
+    SpokenTermsListInput:
+      type: object
+      required:
+        - lang
+        - entries
+      properties:
+        lang:
+          description: Language code (ISO 639-1) for this term list.
+          type: string
+          example: en
+        entries:
+          description: Newline-separated list of terms. Maximum 300 characters total.
+          type: string
+          maxLength: 300
+          example: "DeepL\nAPI\nwebhook"
+    PatchSpokenTermsParameters:
+      type: object
+      properties:
+        name:
+          description: New name for the Spoken Terms collection.
+          type: string
+          maxLength: 1024
+          example: Updated Technical Terms
+        term_lists:
+          description: Term lists to merge with existing lists.
+          type: array
+          items:
+            $ref: '#/components/schemas/SpokenTermsListInput'
+    PutSpokenTermsListParameters:
+      type: object
+      required:
+        - lang
+        - entries
+      properties:
+        lang:
+          description: Language code (ISO 639-1) for this term list.
+          type: string
+          example: en
+        entries:
+          description: Newline-separated list of terms. Maximum 300 characters total.
+          type: string
+          maxLength: 300
+          example: "DeepL\nAPI\nwebhook\nintegration"
+    SpokenTerms:
+      type: object
+      properties:
+        spoken_terms_id:
+          description: A unique ID assigned to the Spoken Terms collection.
+          type: string
+          example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
+        name:
+          description: Name of the Spoken Terms collection.
+          type: string
+          example: Technical Terms
+        term_lists:
+          description: List of term lists contained in this collection.
+          type: array
+          items:
+            $ref: '#/components/schemas/SpokenTermsList'
+        creation_time:
+          description: 'The creation time of the Spoken Terms collection in ISO 8601-1:2019 format (e.g.: `2025-08-03T14:16:18.329Z`).'
+          type: string
+          format: date-time
+          example: '2025-08-03T14:16:18.329Z'
+    SpokenTermsList:
+      type: object
+      properties:
+        lang:
+          description: Language code (ISO 639-1).
+          type: string
+          example: en
+        entry_count:
+          description: Number of terms in this list.
+          type: integer
+          example: 3
+    SpokenTermsEntries:
+      type: object
+      properties:
+        lang:
+          description: Language code (ISO 639-1).
+          type: string
+          example: en
+        entries:
+          description: Newline-separated list of terms.
+          type: string
+          example: "DeepL\nAPI\nwebhook"
     PreserveFormattingOption:
       description: |-
         Sets whether the translation engine should respect the original formatting, even if it would usually
