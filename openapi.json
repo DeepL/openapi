@@ -1077,6 +1077,14 @@
                     "file": "@document.docx"
                   }
                 },
+                "Watermark": {
+                  "summary": "Adding a \"Translated by DeepL\" watermark (docx/pdf only)",
+                  "value": {
+                    "target_lang": "DE",
+                    "file": "@document.pdf",
+                    "enable_watermark": true
+                  }
+                },
                 "Glossary": {
                   "summary": "Using a Glossary",
                   "value": {
@@ -1168,6 +1176,11 @@
                   },
                   "translation_memory_threshold": {
                     "$ref": "#/components/schemas/TranslationMemoryThreshold"
+                  },
+                  "enable_watermark": {
+                    "description": "When `true`, adds a \"Translated by DeepL\" watermark to the translated document.\n\nOnly supported for `docx` and `pdf` output. For all other output formats the parameter is ignored and the document is returned without a watermark.",
+                    "type": "boolean",
+                    "default": false
                   },
                   "enable_beta_languages": {
                     "description": "This parameter is maintained for backward compatibility and has no effect.",
