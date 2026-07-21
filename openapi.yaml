@@ -6406,7 +6406,7 @@ components:
       default: json
       example: json
     VoiceTargetMediaVoice:
-      description: (closed beta) Target audio voice selection for synthesized speech. The default voice is language dependent.
+      description: Target audio voice selection for synthesized speech. The default voice is language dependent.
       type: string
       enum:
       - male
@@ -6598,7 +6598,7 @@ components:
     VoiceTargetMediaLanguages:
       type: array
       description: >
-        (closed beta) List of target languages for which to generate synthesized audio.
+        List of target languages for which to generate synthesized audio.
         Languages specified here will automatically be added to target_languages if not already present,
         ensuring you receive both text translation and audio synthesis for these languages.
         If omitted, only text transcription and translation will be provided (no audio synthesis).
@@ -6651,7 +6651,7 @@ components:
     VoiceTargetMediaContentType:
       type: string
       description: "
-        (closed beta) The audio format for synthesized target media streaming.\n
+        The audio format for synthesized target media streaming.\n
         Specifies container, codec, and encoding parameters for the audio returned in target_media_chunk messages.\n
         If not specified, defaults to audio/webm;codecs=opus.\n
         Only applies when target_media_languages is specified.\n

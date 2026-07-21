@@ -8855,7 +8855,7 @@
         "example": "json"
       },
       "VoiceTargetMediaVoice": {
-        "description": "(closed beta) Target audio voice selection for synthesized speech. The default voice is language dependent.",
+        "description": "Target audio voice selection for synthesized speech. The default voice is language dependent.",
         "type": "string",
         "enum": [
           "male",
@@ -9013,7 +9013,7 @@
       },
       "VoiceTargetMediaLanguages": {
         "type": "array",
-        "description": "(closed beta) List of target languages for which to generate synthesized audio. Languages specified here will automatically be added to target_languages if not already present, ensuring you receive both text translation and audio synthesis for these languages. If omitted, only text transcription and translation will be provided (no audio synthesis). Language identifiers must comply with IETF BCP 47.\nNote: Some translated audio languages are provided through external service partners. See the [supported languages table](/api-reference/voice#show-supported-languages) for details.\n",
+        "description": "List of target languages for which to generate synthesized audio. Languages specified here will automatically be added to target_languages if not already present, ensuring you receive both text translation and audio synthesis for these languages. If omitted, only text transcription and translation will be provided (no audio synthesis). Language identifiers must comply with IETF BCP 47.\nNote: Some translated audio languages are provided through external service partners. See the [supported languages table](/api-reference/voice#show-supported-languages) for details.\n",
         "items": {
           "type": "string",
           "enum": [
@@ -9063,7 +9063,7 @@
       },
       "VoiceTargetMediaContentType": {
         "type": "string",
-        "description": " (closed beta) The audio format for synthesized target media streaming.\n Specifies container, codec, and encoding parameters for the audio returned in target_media_chunk messages.\n If not specified, defaults to audio/webm;codecs=opus.\n Only applies when target_media_languages is specified.\n \n | Content Type | Container | Codec |\n | :--- | :--- | :--- |\n | `audio/flac` | FLAC (flac) | FLAC 24000 Hz |\n | `video/mp2t;codecs=aac` | MPEG Transport Stream (Audio only) | AAC 70 kbit/s |\n | `video/mp2t;codecs=opus` | MPEG Transport Stream (Audio only) | OPUS 32 kbit/s |\n | `audio/ogg` | Ogg (ogg/oga) | OPUS 32 kbit/s |\n | `audio/ogg;codecs=flac` | Ogg (ogg/oga) | FLAC 24000 Hz |\n | `audio/ogg;codecs=opus` | Ogg (ogg/oga) | OPUS 32 kbit/s |\n | `audio/opus` | - | OPUS 32 kbit/s |\n | `audio/pcm;encoding=alaw;rate=8000` | - | PCM A-Law 8000 Hz (G.711) |\n | `audio/pcm;encoding=ulaw;rate=8000` | - | PCM µ-Law 8000 Hz (G.711) |\n | `audio/pcm;encoding=s16le;rate=16000` | - | PCM signed 16-bit little-endian 16000 Hz |\n | `audio/pcm;encoding=s16le;rate=24000` | - | PCM signed 16-bit little-endian 24000 Hz |\n | `audio/webm` | WebM (webm) | OPUS 32 kbit/s  |\n | `audio/webm;codecs=opus` | WebM (webm) | OPUS 32 kbit/s |\n | `audio/x-matroska;codecs=aac` | Matroska (mkv/mka) | AAC 70 kbit/s |\n | `audio/x-matroska;codecs=flac` | Matroska (mkv/mka) | FLAC 24000 Hz |\n | `audio/x-matroska;codecs=opus` | Matroska (mkv/mka) | OPUS 32 kbit/s |\n \n We recommend the following formats as good tradeoffs between quality and bandwidth:\n - OPUS (WebM): 32 kbps, recommended for low bandwidth scenarios (default)\n - PCM 24kHz: 384 kbps, high quality",
+        "description": " The audio format for synthesized target media streaming.\n Specifies container, codec, and encoding parameters for the audio returned in target_media_chunk messages.\n If not specified, defaults to audio/webm;codecs=opus.\n Only applies when target_media_languages is specified.\n \n | Content Type | Container | Codec |\n | :--- | :--- | :--- |\n | `audio/flac` | FLAC (flac) | FLAC 24000 Hz |\n | `video/mp2t;codecs=aac` | MPEG Transport Stream (Audio only) | AAC 70 kbit/s |\n | `video/mp2t;codecs=opus` | MPEG Transport Stream (Audio only) | OPUS 32 kbit/s |\n | `audio/ogg` | Ogg (ogg/oga) | OPUS 32 kbit/s |\n | `audio/ogg;codecs=flac` | Ogg (ogg/oga) | FLAC 24000 Hz |\n | `audio/ogg;codecs=opus` | Ogg (ogg/oga) | OPUS 32 kbit/s |\n | `audio/opus` | - | OPUS 32 kbit/s |\n | `audio/pcm;encoding=alaw;rate=8000` | - | PCM A-Law 8000 Hz (G.711) |\n | `audio/pcm;encoding=ulaw;rate=8000` | - | PCM µ-Law 8000 Hz (G.711) |\n | `audio/pcm;encoding=s16le;rate=16000` | - | PCM signed 16-bit little-endian 16000 Hz |\n | `audio/pcm;encoding=s16le;rate=24000` | - | PCM signed 16-bit little-endian 24000 Hz |\n | `audio/webm` | WebM (webm) | OPUS 32 kbit/s  |\n | `audio/webm;codecs=opus` | WebM (webm) | OPUS 32 kbit/s |\n | `audio/x-matroska;codecs=aac` | Matroska (mkv/mka) | AAC 70 kbit/s |\n | `audio/x-matroska;codecs=flac` | Matroska (mkv/mka) | FLAC 24000 Hz |\n | `audio/x-matroska;codecs=opus` | Matroska (mkv/mka) | OPUS 32 kbit/s |\n \n We recommend the following formats as good tradeoffs between quality and bandwidth:\n - OPUS (WebM): 32 kbps, recommended for low bandwidth scenarios (default)\n - PCM 24kHz: 384 kbps, high quality",
         "enum": [
           "audio/flac",
           "video/mp2t;codecs=aac",

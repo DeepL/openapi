@@ -235,7 +235,7 @@
       "TargetMediaChunk": {
         "name": "TargetMediaChunk",
         "title": "Target Media Chunk",
-        "description": " (closed beta) The message contains translated audio data in the target language. \n\n The audio data is provided as an array of base64-encoded indivisible chunks (e.g., codec packets or container pages/clusters). The first message of this type includes the content type and optional headers field. The `headers` field (when present) indicates how many packets at the start of the `data` array contain initialization/header data required by the decoder. For containerized formats, all packets can be passed directly to the demuxer. For raw codec formats with headers, the header packets must be used to initialize the decoder before processing subsequent audio packets. When `headers` is `null` or absent, all packets in the `data` array are audio data. \n\n The audio stream contains only synthesized speech segments, without silence or padding. \n\n Clients should decode and play back the audio chunks in the order received and sequence given in `data`. For subtitle synchronization, use the `text` field to identify subtitle segments and accumulate `duration` values to calculate total playback time for each subtitle.",
+        "description": " The message contains translated audio data in the target language. \n\n The audio data is provided as an array of base64-encoded indivisible chunks (e.g., codec packets or container pages/clusters). The first message of this type includes the content type and optional headers field. The `headers` field (when present) indicates how many packets at the start of the `data` array contain initialization/header data required by the decoder. For containerized formats, all packets can be passed directly to the demuxer. For raw codec formats with headers, the header packets must be used to initialize the decoder before processing subsequent audio packets. When `headers` is `null` or absent, all packets in the `data` array are audio data. \n\n The audio stream contains only synthesized speech segments, without silence or padding. \n\n Clients should decode and play back the audio chunks in the order received and sequence given in `data`. For subtitle synchronization, use the `text` field to identify subtitle segments and accumulate `duration` values to calculate total playback time for each subtitle.",
         "contentType": "application/json",
         "payload": {
           "$ref": "#/components/schemas/TargetMediaChunkPayload"
@@ -349,7 +349,7 @@
       "EndOfTargetMedia": {
         "name": "EndOfTargetMedia",
         "title": "End of Target Media",
-        "description": "(closed beta) This message indicates that the *target* media stream is complete and no further audio chunks will be sent for this target language. It gets emitted after client sends End of Source Media and all target audio has been sent.\n",
+        "description": "This message indicates that the *target* media stream is complete and no further audio chunks will be sent for this target language. It gets emitted after client sends End of Source Media and all target audio has been sent.\n",
         "contentType": "application/json",
         "payload": {
           "$ref": "#/components/schemas/EndOfTargetMediaPayload"

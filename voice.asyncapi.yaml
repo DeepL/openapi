@@ -213,7 +213,7 @@ components:
       name: TargetMediaChunk
       title: Target Media Chunk
       description: "
-        (closed beta) The message contains translated audio data in the target language.
+        The message contains translated audio data in the target language.
         \n\n
         The audio data is provided as an array of base64-encoded indivisible chunks (e.g., codec packets or container
         pages/clusters). The first message of this type includes the content type and optional headers field.
@@ -313,7 +313,7 @@ components:
       name: EndOfTargetMedia
       title: End of Target Media
       description: >
-        (closed beta) This message indicates that the *target* media stream is complete and no further audio chunks will be
+        This message indicates that the *target* media stream is complete and no further audio chunks will be
         sent for this target language. It gets emitted after client sends End of Source Media and all target audio
         has been sent.
       contentType: application/json
