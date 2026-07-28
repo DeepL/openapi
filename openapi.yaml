@@ -48,6 +48,13 @@ tags:
   description: |-
     The `correct` endpoint fixes spelling and grammar errors without broader rephrasing. Use it when you want
     a minimal-change correction pass rather than the broader rewriting performed by `rephrase`.
+- name: ManageSpokenTerms
+  description: |-
+    The *Spoken Terms* functions allow you to create, inspect, edit and delete Spoken Terms collections.
+    Spoken Terms improve speech recognition in the Voice API: they ensure specific words and phrases,
+    such as company names, acronyms, and product names, are transcribed correctly. A collection contains
+    one or more term lists, each holding terms for a single language, and is applied to a voice session
+    via the `spoken_terms_id` parameter.
 - name: ManageMultilingualGlossaries
   description: |-
     The *glossary* functions allow you to create, inspect, edit and delete glossaries.
@@ -2370,7 +2377,7 @@ paths:
         - ManageSpokenTerms
       summary: Create Spoken Terms collection
       operationId: createSpokenTerms
-      description: Create a new Spoken Terms collection with one or more term lists. Each term list contains terms for a single language.
+      description: Create a new Spoken Terms collection with one or more term lists. Each term list contains terms for a single language. The number of collections per account is limited by your plan.
       requestBody:
         required: true
         content:
@@ -5950,7 +5957,10 @@ components:
           type: string
           example: en
         entries:
-          description: Newline-separated list of terms. Maximum 300 characters total.
+          description: |
+            Newline-separated list of terms, one term per line. Maximum 300 characters total.
+
+            Terms are case-sensitive. Each term must be non-empty, must not contain C0 or C1 control characters (such as tabs or newlines within a term), and must not have leading or trailing whitespace. Duplicate terms within a list are not allowed (comparison is case-sensitive).
           type: string
           maxLength: 300
           example: "DeepL\nAPI\nwebhook"
@@ -5978,7 +5988,10 @@ components:
           type: string
           example: en
         entries:
-          description: Newline-separated list of terms. Maximum 300 characters total.
+          description: |
+            Newline-separated list of terms, one term per line. Maximum 300 characters total.
+
+            Terms are case-sensitive. Each term must be non-empty, must not contain C0 or C1 control characters (such as tabs or newlines within a term), and must not have leading or trailing whitespace. Duplicate terms within a list are not allowed (comparison is case-sensitive).
           type: string
           maxLength: 300
           example: "DeepL\nAPI\nwebhook\nintegration"

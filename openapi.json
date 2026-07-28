@@ -46,6 +46,10 @@
       "description": "The `correct` endpoint fixes spelling and grammar errors without broader rephrasing. Use it when you want\na minimal-change correction pass rather than the broader rewriting performed by `rephrase`."
     },
     {
+      "name": "ManageSpokenTerms",
+      "description": "The *Spoken Terms* functions allow you to create, inspect, edit and delete Spoken Terms collections.\nSpoken Terms improve speech recognition in the Voice API: they ensure specific words and phrases,\nsuch as company names, acronyms, and product names, are transcribed correctly. A collection contains\none or more term lists, each holding terms for a single language, and is applied to a voice session\nvia the `spoken_terms_id` parameter."
+    },
+    {
       "name": "ManageMultilingualGlossaries",
       "description": "The *glossary* functions allow you to create, inspect, edit and delete glossaries.\nGlossaries created with the glossary function can be used in translate requests by specifying the\n`glossary_id` parameter. A glossary contains (several) dictionaries.\nA dictionary is a mapping of source phrases to target phrases for a single language pair.\nIf you encounter issues, please let us know at support@DeepL.com.\n\nCurrently you can create glossaries with any of the languages DeepL supports (with the exception of Thai).\n\nThe maximum size limit for a glossary is 10 MiB = 10485760 bytes and each source/target text,\nas well as the name of the glossary, is limited to 1024 UTF-8 bytes.\nA total of 1000 glossaries are allowed per account.\n\nWhen creating a dictionary with target language `EN`, `PT`, or `ZH`, it's not necessary to specify a variant\n(e.g. `EN-US`, `EN-GB`, `PT-PT`, `PT-BR`, or `ZH-HANS`).\nDictionaries with target language `EN` can be used in translations with either English variant.\nSimilarly `PT`, and `ZH` dictionaries can be used in translations with their corresponding variants.\n(When you provide the ID of a glossary to a translation, the appropriate dictionary is automatically applied. Currently glossaries can not yet be used with source language detection.)\n\nGlossaries created via the DeepL API are now unified with glossaries created via the DeepL website and DeepL apps.\nPlease only use the v3 glossary API in conjunction with multilingual or edited glossaries from the website."
     },
@@ -3358,7 +3362,7 @@
         ],
         "summary": "Create Spoken Terms collection",
         "operationId": "createSpokenTerms",
-        "description": "Create a new Spoken Terms collection with one or more term lists. Each term list contains terms for a single language.",
+        "description": "Create a new Spoken Terms collection with one or more term lists. Each term list contains terms for a single language. The number of collections per account is limited by your plan.",
         "requestBody": {
           "required": true,
           "content": {
@@ -8351,7 +8355,7 @@
             "example": "en"
           },
           "entries": {
-            "description": "Newline-separated list of terms. Maximum 300 characters total.",
+            "description": "Newline-separated list of terms, one term per line. Maximum 300 characters total.\n\nTerms are case-sensitive. Each term must be non-empty, must not contain C0 or C1 control characters (such as tabs or newlines within a term), and must not have leading or trailing whitespace. Duplicate terms within a list are not allowed (comparison is case-sensitive).\n",
             "type": "string",
             "maxLength": 300,
             "example": "DeepL\nAPI\nwebhook"
@@ -8389,7 +8393,7 @@
             "example": "en"
           },
           "entries": {
-            "description": "Newline-separated list of terms. Maximum 300 characters total.",
+            "description": "Newline-separated list of terms, one term per line. Maximum 300 characters total.\n\nTerms are case-sensitive. Each term must be non-empty, must not contain C0 or C1 control characters (such as tabs or newlines within a term), and must not have leading or trailing whitespace. Duplicate terms within a list are not allowed (comparison is case-sensitive).\n",
             "type": "string",
             "maxLength": 300,
             "example": "DeepL\nAPI\nwebhook\nintegration"
