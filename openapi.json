@@ -63,7 +63,7 @@
     },
     {
       "name": "TranslationMemories",
-      "description": "The translation memory endpoints allow you to interact with your account's translation memories, used to store\nand reuse previously created translations. Translation memories can be used in text translation requests by\nspecifying the `translation_memory_id` parameter to denote a specific translation memory and the\n`translation_memory_threshold` which defines the minimum matching percentage required for a translation memory\nsegment to be applied (recommended to be 75% or higher)."
+      "description": "The translation memory endpoints allow you to manage your account's translation memories, used to store\nand reuse previously created translations. You can list and retrieve translation memories, page through\ntheir stored segments, create one by importing a TMX file, export one back to TMX, and delete one.\nEditing the contents of an existing translation memory is not supported; import a new one instead.\n\nImporting and exporting run as background jobs. Create the job, then poll\n`GET /v3/translation_memories/jobs/{job_id}` until it reports `completed`.\n\nTranslation memories can be used in text translation requests by\nspecifying the `translation_memory_id` parameter to denote a specific translation memory and the\n`translation_memory_threshold` which defines the minimum matching percentage required for a translation memory\nsegment to be applied (recommended to be 75% or higher). A translation request fails with `404` if the\ntranslation memory does not exist or does not cover the requested language pair."
     },
     {
       "name": "VoiceAPI",
@@ -4278,9 +4278,9 @@
               "type": "integer",
               "default": 10,
               "minimum": 1,
-              "maximum": 25
+              "maximum": 100
             },
-            "description": "The maximum number of translation memories to return."
+            "description": "The maximum number of translation memories to return. Values above 100 are reduced to 100."
           }
         ],
         "responses": {
@@ -4350,6 +4350,788 @@
           },
           "403": {
             "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
+    "/v3/translation_memories/import": {
+      "post": {
+        "tags": [
+          "TranslationMemories"
+        ],
+        "summary": "Import a translation memory",
+        "operationId": "createTranslationMemoryImport",
+        "description": "Create a translation memory by importing a TMX file.\n\nThis endpoint does not accept the file itself. It returns a short-lived `upload_url`, and you\nupload the TMX file to that URL with a separate `PUT` request. Processing starts automatically\nonce the upload completes, so there is no third call to confirm it.\n\n1. `POST /v3/translation_memories/import` with the file's name and size. The response returns a\n   `job_id`, an `upload_url`, and the `expires_at` time after which the URL stops working.\n2. `PUT` the TMX file to `upload_url`. Do not send your `Authorization` header on this request,\n   because the URL is already signed.\n3. Poll [Retrieve an import or export job](/api-reference/translation-memory/retrieve-a-translation-memory-job)\n   until the status is `completed`. The new `translation_memory_id` is on the job result.\n\nRequires an API key with the `translation_memories:write` scope.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "source_file"
+                ],
+                "properties": {
+                  "source_file": {
+                    "type": "object",
+                    "required": [
+                      "file_name",
+                      "content_length"
+                    ],
+                    "properties": {
+                      "file_name": {
+                        "description": "The name of the TMX file you intend to upload, including its extension. At most 100\ncharacters.",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "legal.tmx"
+                      },
+                      "content_type": {
+                        "description": "The MIME type of the file. Defaults to `application/xml`, which is correct for TMX.\nTMX is currently the only supported import format. At most 127 characters.",
+                        "type": "string",
+                        "default": "application/xml",
+                        "maxLength": 127,
+                        "example": "application/xml"
+                      },
+                      "content_length": {
+                        "description": "The size of the file in bytes. Must be greater than 0 and at most 1 GB. An oversize\nvalue is rejected with `400 Bad Request`.",
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 1,
+                        "example": 1024
+                      }
+                    }
+                  },
+                  "parameters": {
+                    "type": "object",
+                    "properties": {
+                      "display_name": {
+                        "description": "The name to give the new translation memory. If you omit this, the translation memory\nis created without a name.",
+                        "type": "string",
+                        "example": "Legal"
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "Basic": {
+                  "value": {
+                    "source_file": {
+                      "file_name": "legal.tmx",
+                      "content_type": "application/xml",
+                      "content_length": 1024
+                    },
+                    "parameters": {
+                      "display_name": "Legal"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "The import job was created. Upload the file to `upload_url` before `expires_at`.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "job_id",
+                    "upload_url",
+                    "expires_at"
+                  ],
+                  "properties": {
+                    "job_id": {
+                      "description": "The identifier of the import job. Use it to poll the job's status.",
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40"
+                    },
+                    "upload_url": {
+                      "description": "A signed URL to `PUT` the TMX file to. Do not send your `Authorization` header with the\nupload request.",
+                      "type": "string",
+                      "format": "uri",
+                      "example": "https://assets.deepl.com/upload/0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40"
+                    },
+                    "expires_at": {
+                      "description": "The time the `upload_url` stops accepting uploads, in the ISO 8601-1:2019 format. After\nthis time, create a new import job.",
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2026-08-06T15:34:25.223Z"
+                    }
+                  }
+                },
+                "examples": {
+                  "Basic": {
+                    "value": {
+                      "job_id": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+                      "upload_url": "https://assets.deepl.com/upload/0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+                      "expires_at": "2026-08-06T15:34:25.223Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "456": {
+            "description": "You have reached the maximum number of translation memories for your account. Delete a\ntranslation memory before creating another one.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
+    "/v3/translation_memories/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "TranslationMemories"
+        ],
+        "summary": "Retrieve an import or export job",
+        "operationId": "getTranslationMemoryJob",
+        "description": "Retrieve the status of a translation memory import or export job.\n\nPoll this endpoint after creating a job. The `operation` field tells you which kind of job it is,\nand the single entry in `results` carries the status and, once the job finishes, its output: the\nnew `translation_memory_id` for an import, or a `download_url` for an export.\n\nRequires an API key with the `translation_memories:read` scope.",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The identifier of the job, returned when you created the import or export.",
+            "example": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the current state of the job.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationMemoryJob"
+                },
+                "examples": {
+                  "Import awaiting upload": {
+                    "value": {
+                      "job_id": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+                      "product": "translation_memory",
+                      "operation": "import",
+                      "creation_time": "2026-08-06T15:04:25.223Z",
+                      "updated_time": "2026-08-06T15:04:25.223Z",
+                      "source_file": {
+                        "content_type": "application/xml",
+                        "content_length": 1024
+                      },
+                      "parameters": {
+                        "display_name": "Legal"
+                      },
+                      "results": [
+                        {
+                          "status": "awaiting_input",
+                          "status_metadata": {
+                            "required_action": "Waiting for upload"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "Import completed": {
+                    "value": {
+                      "job_id": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+                      "product": "translation_memory",
+                      "operation": "import",
+                      "creation_time": "2026-08-06T15:04:25.223Z",
+                      "updated_time": "2026-08-06T15:06:11.418Z",
+                      "source_file": {
+                        "content_type": "application/xml",
+                        "content_length": 1024
+                      },
+                      "parameters": {
+                        "display_name": "Legal"
+                      },
+                      "results": [
+                        {
+                          "status": "completed",
+                          "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+                          "skipped_segment_count": 12
+                        }
+                      ]
+                    }
+                  },
+                  "Export completed": {
+                    "value": {
+                      "job_id": "7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+                      "product": "translation_memory",
+                      "operation": "export",
+                      "creation_time": "2026-08-06T15:04:25.223Z",
+                      "updated_time": "2026-08-06T15:05:02.771Z",
+                      "parameters": {
+                        "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994"
+                      },
+                      "results": [
+                        {
+                          "status": "completed",
+                          "download_url": "https://assets.deepl.com/download/7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+                          "expires_at": "2026-08-06T16:05:02.771Z"
+                        }
+                      ]
+                    }
+                  },
+                  "Failed": {
+                    "value": {
+                      "job_id": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+                      "product": "translation_memory",
+                      "operation": "import",
+                      "creation_time": "2026-08-06T15:04:25.223Z",
+                      "updated_time": "2026-08-06T15:04:58.102Z",
+                      "source_file": {
+                        "content_type": "application/xml",
+                        "content_length": 1024
+                      },
+                      "parameters": {
+                        "display_name": "Legal"
+                      },
+                      "results": [
+                        {
+                          "status": "failed",
+                          "error": {
+                            "message": "The uploaded file is not valid TMX."
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "404": {
+            "description": "The job could not be found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
+    "/v3/translation_memories/{translation_memory_id}": {
+      "get": {
+        "tags": [
+          "TranslationMemories"
+        ],
+        "summary": "Retrieve a translation memory",
+        "operationId": "getTranslationMemory",
+        "description": "Retrieve a single translation memory by its ID, including its languages and segment count.\n\nTo read the stored segments themselves, use\n[List translation memory segments](/api-reference/translation-memory/list-translation-memory-segments).\n\nRequires an API key with the `translation_memories:read` scope.",
+        "parameters": [
+          {
+            "name": "translation_memory_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TranslationMemoryId"
+            },
+            "description": "The ID of the translation memory to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the translation memory.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationMemory"
+                },
+                "examples": {
+                  "Basic": {
+                    "value": {
+                      "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+                      "name": "Legal",
+                      "source_language": "en",
+                      "target_languages": [
+                        "es",
+                        "de"
+                      ],
+                      "segment_count": 3542,
+                      "creation_time": "2026-04-01T16:34:25.223Z",
+                      "updated_time": "2026-08-06T09:12:44.108Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "404": {
+            "description": "The translation memory could not be found. This is also returned for a translation memory that\nbelongs to another account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "TranslationMemories"
+        ],
+        "summary": "Delete a translation memory",
+        "operationId": "deleteTranslationMemory",
+        "description": "Delete a translation memory and all of its segments.\n\nDeletion is permanent and cannot be undone. Export the translation memory first if you need a\ncopy of its contents. Translation requests that pass the deleted `translation_memory_id` fail\nafter this call, so update your integration before deleting.\n\nRequires an API key with the `translation_memories:write` scope.",
+        "parameters": [
+          {
+            "name": "translation_memory_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TranslationMemoryId"
+            },
+            "description": "The ID of the translation memory to delete."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The translation memory was deleted. The response has no body.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "404": {
+            "description": "The translation memory could not be found. This is also returned for a translation memory that\nbelongs to another account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
+    "/v3/translation_memories/{translation_memory_id}/segments": {
+      "get": {
+        "tags": [
+          "TranslationMemories"
+        ],
+        "summary": "List translation memory segments",
+        "operationId": "getTranslationMemorySegments",
+        "description": "List the segments stored in a translation memory, one page at a time. Each entry is a source\nsegment with its translations in every target language.\n\nThis endpoint uses cursor-based pagination rather than the numbered pages used by\n[List translation memories](/api-reference/translation-memory/list-translation-memories). Omit\n`page_cursor` on your first call, then pass the `next_page_cursor` from each response to get the\nfollowing page. When a response has no `next_page_cursor`, you have reached the last page.\n\nRequires an API key with the `translation_memories:read` scope.",
+        "parameters": [
+          {
+            "name": "translation_memory_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TranslationMemoryId"
+            },
+            "description": "The ID of the translation memory whose segments you want to list."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "The maximum number of segments to return per page. Values above 100 are reduced to 100."
+          },
+          {
+            "name": "page_cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "The `next_page_cursor` from a previous response. Omit this on your first call. Treat the value\nas opaque: do not build or modify it yourself."
+          },
+          {
+            "name": "filter_text",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 2
+            },
+            "description": "Return only segments where this text appears in the source or in any target translation. Must be\nat least 2 characters."
+          },
+          {
+            "name": "filter_case_sensitive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Whether `filter_text` is matched case-sensitively."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a page of segments.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "segments",
+                    "segment_count"
+                  ],
+                  "properties": {
+                    "segments": {
+                      "description": "The segments on this page.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TranslationMemorySegment"
+                      }
+                    },
+                    "segment_count": {
+                      "description": "The total number of segments in the translation memory. This is not reduced by\n`filter_text`, so a filtered request still reports the full count. Do not use it to\npredict how many results a filtered query returns.",
+                      "type": "integer",
+                      "example": 3542
+                    },
+                    "next_page_cursor": {
+                      "description": "The cursor to pass as `page_cursor` to retrieve the next page. Absent on the last page.",
+                      "type": "string",
+                      "example": "eyJvZmZzZXQiOjUwfQ"
+                    }
+                  }
+                },
+                "examples": {
+                  "Basic": {
+                    "value": {
+                      "segments": [
+                        {
+                          "source_segment_id": "4f1c2d3e-8a9b-4c5d-9e6f-7a8b9c0d1e2f",
+                          "source_text": "This agreement is governed by the laws of Germany.",
+                          "creation_time": "2026-04-01T16:34:25.223Z",
+                          "updated_time": "2026-04-01T16:34:25.223Z",
+                          "last_used_time": "2026-08-05T11:02:18.771Z",
+                          "targets": [
+                            {
+                              "target_segment_id": "9b8a7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d",
+                              "target_language": "de",
+                              "target_text": "Dieser Vertrag unterliegt dem Recht der Bundesrepublik Deutschland.",
+                              "creation_time": "2026-04-01T16:34:25.223Z",
+                              "updated_time": "2026-04-01T16:34:25.223Z",
+                              "last_used_time": "2026-08-05T11:02:18.771Z"
+                            },
+                            {
+                              "target_segment_id": "2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f",
+                              "target_language": "es",
+                              "target_text": "Este contrato se rige por las leyes de Alemania.",
+                              "creation_time": "2026-04-01T16:34:25.223Z",
+                              "updated_time": "2026-04-01T16:34:25.223Z",
+                              "last_used_time": "2026-07-22T08:41:05.330Z"
+                            }
+                          ]
+                        }
+                      ],
+                      "segment_count": 3542,
+                      "next_page_cursor": "eyJvZmZzZXQiOjUwfQ"
+                    }
+                  },
+                  "Last page": {
+                    "value": {
+                      "segments": [
+                        {
+                          "source_segment_id": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
+                          "source_text": "Termination requires 30 days written notice.",
+                          "creation_time": "2026-04-01T16:34:25.223Z",
+                          "updated_time": "2026-04-01T16:34:25.223Z",
+                          "last_used_time": "2026-08-01T14:20:09.512Z",
+                          "targets": [
+                            {
+                              "target_segment_id": "0d1e2f3a-4b5c-4d6e-8f7a-8b9c0d1e2f3a",
+                              "target_language": "de",
+                              "target_text": "Die Kündigung erfordert eine schriftliche Frist von 30 Tagen.",
+                              "creation_time": "2026-04-01T16:34:25.223Z",
+                              "updated_time": "2026-04-01T16:34:25.223Z",
+                              "last_used_time": "2026-08-01T14:20:09.512Z"
+                            }
+                          ]
+                        }
+                      ],
+                      "segment_count": 3542
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "404": {
+            "description": "The translation memory could not be found. This is also returned for a translation memory that\nbelongs to another account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
+    "/v3/translation_memories/{translation_memory_id}/export": {
+      "post": {
+        "tags": [
+          "TranslationMemories"
+        ],
+        "summary": "Export a translation memory",
+        "operationId": "createTranslationMemoryExport",
+        "description": "Export a translation memory as a TMX file.\n\nThe export runs as a background job. Poll\n[Retrieve an import or export job](/api-reference/translation-memory/retrieve-a-translation-memory-job)\nuntil the status is `completed`, then download the file from the `download_url` on the job result.\nThat URL is short-lived, so download the file rather than storing the link.\n\nIf a recent export of the same translation memory is still available, DeepL reuses it and returns\n`200 OK` with that job instead of starting a new one. Handle both `200` and `202` as success. If a\ndifferent export of the same translation memory is still running, the request returns\n`409 Conflict`.\n\nRequires an API key with the `translation_memories:read` scope.",
+        "parameters": [
+          {
+            "name": "translation_memory_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TranslationMemoryId"
+            },
+            "description": "The ID of the translation memory to export."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An existing export was reused. Poll the returned `job_id` for the download URL.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTranslationMemoryExport"
+                },
+                "examples": {
+                  "Basic": {
+                    "value": {
+                      "job_id": "7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+                      "parameters": {
+                        "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The export job was created. Poll the returned `job_id` for the download URL.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTranslationMemoryExport"
+                },
+                "examples": {
+                  "Basic": {
+                    "value": {
+                      "job_id": "7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+                      "parameters": {
+                        "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "404": {
+            "description": "The translation memory could not be found. This is also returned for a translation memory that\nbelongs to another account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "An export of this translation memory is already in progress. Poll that job instead of starting\nanother export.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
@@ -8582,6 +9364,267 @@
           "zh-hans"
         ],
         "example": "es"
+      },
+      "TranslationMemorySegment": {
+        "description": "A source segment stored in a translation memory, with its translations.",
+        "type": "object",
+        "required": [
+          "source_segment_id",
+          "source_text",
+          "targets"
+        ],
+        "properties": {
+          "source_segment_id": {
+            "description": "A unique ID assigned to the source segment.",
+            "type": "string",
+            "example": "4f1c2d3e-8a9b-4c5d-9e6f-7a8b9c0d1e2f"
+          },
+          "source_text": {
+            "description": "The source text of the segment.",
+            "type": "string",
+            "example": "This agreement is governed by the laws of Germany."
+          },
+          "creation_time": {
+            "description": "The time the segment was added, in the ISO 8601-1:2019 format.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-01T16:34:25.223Z"
+          },
+          "updated_time": {
+            "description": "The time the segment was last changed, in the ISO 8601-1:2019 format.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-01T16:34:25.223Z"
+          },
+          "last_used_time": {
+            "description": "The time the segment was last applied to a translation, in the ISO 8601-1:2019 format. Absent\nif the segment has never been used.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-05T11:02:18.771Z"
+          },
+          "targets": {
+            "description": "The translations of this source segment, one per target language.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslationMemoryTargetSegment"
+            }
+          }
+        }
+      },
+      "TranslationMemoryTargetSegment": {
+        "description": "A translation of a source segment in one target language.",
+        "type": "object",
+        "required": [
+          "target_segment_id",
+          "target_language",
+          "target_text"
+        ],
+        "properties": {
+          "target_segment_id": {
+            "description": "A unique ID assigned to the target segment.",
+            "type": "string",
+            "example": "9b8a7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d"
+          },
+          "target_language": {
+            "$ref": "#/components/schemas/TranslationMemoryTargetLanguage"
+          },
+          "target_text": {
+            "description": "The translated text.",
+            "type": "string",
+            "example": "Dieser Vertrag unterliegt dem Recht der Bundesrepublik Deutschland."
+          },
+          "creation_time": {
+            "description": "The time the translation was added, in the ISO 8601-1:2019 format.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-01T16:34:25.223Z"
+          },
+          "updated_time": {
+            "description": "The time the translation was last changed, in the ISO 8601-1:2019 format.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-01T16:34:25.223Z"
+          },
+          "last_used_time": {
+            "description": "The time the translation was last applied to a translation request, in the ISO 8601-1:2019\nformat. Absent if it has never been used.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-05T11:02:18.771Z"
+          }
+        }
+      },
+      "CreateTranslationMemoryExport": {
+        "description": "A reference to a translation memory export job.",
+        "type": "object",
+        "required": [
+          "job_id",
+          "parameters"
+        ],
+        "properties": {
+          "job_id": {
+            "description": "The identifier of the export job. Use it to poll the job's status.",
+            "type": "string",
+            "format": "uuid",
+            "example": "7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13"
+          },
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "translation_memory_id": {
+                "$ref": "#/components/schemas/TranslationMemoryId"
+              }
+            }
+          }
+        }
+      },
+      "TranslationMemoryJob": {
+        "description": "The state of a translation memory import or export job. Fields that do not apply to the job's\n`operation` are omitted.",
+        "type": "object",
+        "required": [
+          "job_id",
+          "product",
+          "operation",
+          "creation_time",
+          "updated_time",
+          "parameters",
+          "results"
+        ],
+        "properties": {
+          "job_id": {
+            "description": "The identifier of the job.",
+            "type": "string",
+            "format": "uuid",
+            "example": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40"
+          },
+          "product": {
+            "description": "The DeepL product the job belongs to. Always `translation_memory`.",
+            "type": "string",
+            "example": "translation_memory"
+          },
+          "operation": {
+            "description": "Which kind of job this is.",
+            "type": "string",
+            "enum": [
+              "import",
+              "export"
+            ],
+            "example": "import"
+          },
+          "creation_time": {
+            "description": "The time the job was created, in the ISO 8601-1:2019 format.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-06T15:04:25.223Z"
+          },
+          "updated_time": {
+            "description": "The time the job last changed state, in the ISO 8601-1:2019 format.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-06T15:06:11.418Z"
+          },
+          "source_file": {
+            "description": "The file declared when the import job was created. Omitted for export jobs.",
+            "type": "object",
+            "properties": {
+              "content_type": {
+                "description": "The MIME type declared for the uploaded file.",
+                "type": "string",
+                "example": "application/xml"
+              },
+              "content_length": {
+                "description": "The size in bytes declared for the uploaded file.",
+                "type": "integer",
+                "format": "int64",
+                "example": 1024
+              }
+            }
+          },
+          "parameters": {
+            "description": "The parameters the job was created with. Import jobs report `display_name`; export jobs report\n`translation_memory_id`.",
+            "type": "object",
+            "properties": {
+              "translation_memory_id": {
+                "$ref": "#/components/schemas/TranslationMemoryId"
+              },
+              "display_name": {
+                "description": "The name given to the translation memory the import creates.",
+                "type": "string",
+                "example": "Legal"
+              }
+            }
+          },
+          "results": {
+            "description": "The job's outcome. This array always holds exactly one entry. It is an array so that jobs\nproducing multiple outputs can be represented without a breaking change.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslationMemoryJobResult"
+            }
+          }
+        }
+      },
+      "TranslationMemoryJobResult": {
+        "description": "The status of a translation memory job and, once it finishes, its output.",
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "description": "The job's current state:\n * `awaiting_input` - the job exists but the file has not been uploaded yet (import only)\n * `processing` - the file was received and is being processed\n * `completed` - the job finished successfully\n * `failed` - the job did not finish; see `error`\n * `expired` - the job is too old to act on; create a new one",
+            "type": "string",
+            "enum": [
+              "awaiting_input",
+              "processing",
+              "completed",
+              "failed",
+              "expired"
+            ],
+            "example": "completed"
+          },
+          "status_metadata": {
+            "description": "Extra context for states that need you to act. Present only when there is something to do.",
+            "type": "object",
+            "properties": {
+              "required_action": {
+                "description": "What the job is waiting for.",
+                "type": "string",
+                "example": "Waiting for upload"
+              }
+            }
+          },
+          "download_url": {
+            "description": "A short-lived URL to download the exported TMX file from. Present on completed export jobs\nonly. Download the file rather than storing this URL.",
+            "type": "string",
+            "format": "uri",
+            "example": "https://assets.deepl.com/download/7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13"
+          },
+          "expires_at": {
+            "description": "The time `download_url` stops working, in the ISO 8601-1:2019 format. Present on completed\nexport jobs only.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-06T16:05:02.771Z"
+          },
+          "error": {
+            "description": "Why the job failed. Present only when `status` is `failed`.",
+            "type": "object",
+            "properties": {
+              "message": {
+                "description": "A description of the failure.",
+                "type": "string",
+                "example": "The uploaded file is not valid TMX."
+              }
+            }
+          },
+          "translation_memory_id": {
+            "$ref": "#/components/schemas/TranslationMemoryId"
+          },
+          "skipped_segment_count": {
+            "description": "How many segments in the uploaded file were not imported, for example because they were\nmalformed or duplicated an existing segment. Present on completed import jobs only. A non-zero\nvalue does not mean the import failed.",
+            "type": "integer",
+            "format": "int64",
+            "example": 12
+          }
+        }
       },
       "TranslationMemoryThreshold": {
         "type": "integer",
