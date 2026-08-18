@@ -9,7 +9,7 @@ info:
   contact:
     name: DeepL - Contact us
     url: https://www.deepl.com/contact-us
-  version: 3.12.0
+  version: 3.13.0
 externalDocs:
   description: DeepL Pro - Plans and pricing
   url: https://www.deepl.com/pro#developer
@@ -310,11 +310,15 @@ paths:
                           total_characters: 380
                           text_translation_characters: 380
                           text_improvement_characters: 0
+                          speech_to_text_minutes: 12.5
+                          speech_to_speech_minutes: 4.2
                       - custom_tag: "example-custom-tag-2"
                         breakdown:
                           total_characters: 475
                           text_translation_characters: 475
                           text_improvement_characters: 0
+                          speech_to_text_minutes: 0
+                          speech_to_speech_minutes: 0
                 aggregateByDay:
                   summary: Usage report aggregated by day
                   value:
@@ -330,12 +334,16 @@ paths:
                           total_characters: 380
                           text_translation_characters: 380
                           text_improvement_characters: 0
+                          speech_to_text_minutes: 12.5
+                          speech_to_speech_minutes: 4.2
                       - custom_tag: "example-custom-tag"
                         usage_date: "2026-05-11T00:00:00Z"
                         breakdown:
                           total_characters: 595
                           text_translation_characters: 595
                           text_improvement_characters: 0
+                          speech_to_text_minutes: 0
+                          speech_to_speech_minutes: 0
         400:
           description: Bad request. Please check error message and your parameters.
           headers:
@@ -554,6 +562,8 @@ paths:
         - TranslateText
       summary: Request Translation
       operationId: translateText
+      parameters:
+        - $ref: '#/components/parameters/CustomReportingTag'
       requestBody:
         required: true
         content:
@@ -4166,6 +4176,8 @@ paths:
         - VoiceAPI
       summary: Get Streaming URL
       operationId: getVoiceStreamingUrl
+      parameters:
+        - $ref: '#/components/parameters/CustomReportingTag'
       requestBody:
         required: true
         content:
@@ -4644,6 +4656,20 @@ components:
         type: string
       example: 501c3d93cc0c4f11ae2f60a226c2f0f0
   parameters:
+    CustomReportingTag:
+      name: X-DeepL-Reporting-Tag
+      in: header
+      required: false
+      description: >
+        An optional custom reporting tag used to attribute this request's usage to a
+        team, project, customer, or other category of your choosing. Values are
+        limited to 100 characters. See [How to use custom reporting
+        tags](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags)
+        for validation rules, naming guidance, and how to retrieve usage by tag.
+      schema:
+        type: string
+        maxLength: 100
+      example: team-billing
     DocumentID:
       name: document_id
       description: The document ID that was sent to the client when the document was
@@ -7749,11 +7775,13 @@ components:
           $ref: '#/components/schemas/CustomTagBreakdown'
     CustomTagBreakdown:
       type: object
-      description: Breakdown of character usage by category for a custom tag.
+      description: Breakdown of usage by category for a custom tag.
       properties:
         total_characters:
           type: integer
-          description: Total number of characters used.
+          description: >
+            Total number of characters used across character-based services. Voice
+            usage is reported in minutes and is not included in this total.
           example: 380
         text_translation_characters:
           type: integer
@@ -7763,6 +7791,14 @@ components:
           type: integer
           description: Number of characters used for text improvement.
           example: 0
+        speech_to_text_minutes:
+          type: number
+          description: Duration of speech-to-text usage in minutes.
+          example: 12.5
+        speech_to_speech_minutes:
+          type: number
+          description: Duration of speech-to-speech usage in minutes.
+          example: 4.2
     ErrorResponse:
       type: object
       required:
