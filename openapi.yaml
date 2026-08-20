@@ -4206,7 +4206,27 @@ paths:
                 spoken_terms_id:
                   $ref: '#/components/schemas/SpokenTermsId'
                 glossary_id:
-                  $ref: '#/components/schemas/GlossaryId'
+                  description: |-
+                    Specify the glossary to use for the target transcripts (translations). For new integrations we
+                    recommend the more general `glossary_ids`.
+
+                    Cannot be used together with `glossary_ids`.
+                  type: string
+                  example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
+                glossary_ids:
+                  description: |-
+                    Specify the glossaries to use for the target transcripts (translations), as an array of
+                    glossary IDs ordered by priority (highest first). Each glossary's matching terms are applied to
+                    the translation; where entries conflict, the higher-priority glossary wins. Unknown glossary IDs
+                    are ignored.
+
+                    Cannot be used together with `glossary_id`. Requests that exceed the session limit, contain
+                    duplicates, or combine `glossary_ids` with `glossary_id` are rejected with a `400 Bad Request`
+                    before a session is created.
+                  type: array
+                  items:
+                    type: string
+                    example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                 formality:
                   $ref: '#/components/schemas/VoiceFormality'
             examples:
@@ -4228,6 +4248,16 @@ paths:
                   message_format: 'msgpack'
                   glossary_id: 'def3a26b-3e84-45b3-84ae-0c0aaf3525f7'
                   formality: 'formal'
+              with_multiple_glossaries:
+                summary: With multiple glossaries in priority order
+                value:
+                  source_media_content_type: 'audio/pcm; encoding=s16le; rate=16000'
+                  source_language: 'en'
+                  source_language_mode: 'fixed'
+                  target_languages: ['de', 'fr']
+                  glossary_ids:
+                    - 'def3a26b-3e84-45b3-84ae-0c0aaf3525f7'
+                    - '7c4f1080-cfe2-41d4-8269-0e6ec15a0354'
               with_spoken_terms:
                 summary: With Spoken Terms to inform transcription
                 value:
