@@ -6020,7 +6020,7 @@
                     "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
                   },
                   "glossary_ids": {
-                    "description": "Specify the glossaries to use for the target transcripts (translations), as an array of\nglossary IDs ordered by priority (highest first). Each glossary's matching terms are applied to\nthe translation; where entries conflict, the higher-priority glossary wins. Unknown glossary IDs\nare ignored.\n\nCannot be used together with `glossary_id`. Requests that exceed the session limit, contain\nduplicates, or combine `glossary_ids` with `glossary_id` are rejected with a `400 Bad Request`\nbefore a session is created.",
+                    "description": "Specify the glossaries to use for the target transcripts (translations), as an array of\nglossary IDs ordered by priority (highest first). Each glossary's matching terms are applied to\nthe translation; where entries conflict, the higher-priority glossary wins. Unknown glossary IDs\nare ignored.\n\nIn realtime Voice, glossary terms are matched against the streaming source transcription,\nwhich affects how and when terms are applied. See\n[Glossaries in realtime Voice](/docs/voice/overview#glossaries-in-realtime-voice).\n\nCannot be used together with `glossary_id`. Requests that exceed the\n[session limit](/docs/voice/voice-api-requirements#session-limits), contain duplicates, or\ncombine `glossary_ids` with `glossary_id` are rejected with a `400 Bad Request` before a\nsession is created.",
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -10132,6 +10132,7 @@
             "fi",
             "fr",
             "hi",
+            "hr",
             "hu",
             "id",
             "it",
@@ -10149,6 +10150,7 @@
             "sk",
             "sv",
             "ta",
+            "tl",
             "tr",
             "uk",
             "vi",

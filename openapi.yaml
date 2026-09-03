@@ -4220,9 +4220,14 @@ paths:
                     the translation; where entries conflict, the higher-priority glossary wins. Unknown glossary IDs
                     are ignored.
 
-                    Cannot be used together with `glossary_id`. Requests that exceed the session limit, contain
-                    duplicates, or combine `glossary_ids` with `glossary_id` are rejected with a `400 Bad Request`
-                    before a session is created.
+                    In realtime Voice, glossary terms are matched against the streaming source transcription,
+                    which affects how and when terms are applied. See
+                    [Glossaries in realtime Voice](/docs/voice/overview#glossaries-in-realtime-voice).
+
+                    Cannot be used together with `glossary_id`. Requests that exceed the
+                    [session limit](/docs/voice/voice-api-requirements#session-limits), contain duplicates, or
+                    combine `glossary_ids` with `glossary_id` are rejected with a `400 Bad Request` before a
+                    session is created.
                   type: array
                   items:
                     type: string
@@ -7525,6 +7530,7 @@ components:
           - fi
           - fr
           - hi
+          - hr
           - hu
           - id
           - it
@@ -7542,6 +7548,7 @@ components:
           - sk
           - sv
           - ta
+          - tl
           - tr
           - uk
           - vi
