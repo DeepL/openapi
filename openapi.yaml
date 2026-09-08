@@ -7466,6 +7466,8 @@ components:
           - et
           - fi
           - fr
+          - fr-CA
+          - fr-FR
           - ga
           - he
           - hi
@@ -7529,6 +7531,8 @@ components:
           - es
           - fi
           - fr
+          - fr-CA
+          - fr-FR
           - hi
           - hr
           - hu
