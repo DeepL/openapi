@@ -159,7 +159,7 @@ paths:
           - key_and_day
         example: "key_and_day"
       responses:
-        200:
+        '200':
           description: The usage statistics for the specified date range.
           headers:
             X-Trace-ID:
@@ -204,7 +204,7 @@ paths:
                         speech_to_text_minutes: 107.46
                       start_date: "2025-09-29T00:00:00"
                       end_date: "2025-10-01T00:00:00"
-        400:
+        '400':
           description: Bad request. Please check error message and your parameters.
           headers:
             X-Trace-ID:
@@ -226,11 +226,11 @@ paths:
                   summary: Invalid group_by parameter value
                   value:
                     message: "Value for 'group_by' not supported. Allowed: '', 'key', 'key_and_day'."
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
       security:
         - auth_header: [ ]
@@ -286,7 +286,7 @@ paths:
           type: integer
         example: 2
       responses:
-        200:
+        '200':
           description: The custom tag usage statistics for the specified date range.
           headers:
             X-Trace-ID:
@@ -344,7 +344,7 @@ paths:
                           text_improvement_characters: 0
                           speech_to_text_minutes: 0
                           speech_to_speech_minutes: 0
-        400:
+        '400':
           description: Bad request. Please check error message and your parameters.
           headers:
             X-Trace-ID:
@@ -366,11 +366,11 @@ paths:
                   summary: Invalid aggregate_by parameter value
                   value:
                     message: "Value for 'aggregate_by' not supported. Allowed: '', 'period', 'day'."
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
       security:
         - auth_header: [ ]
@@ -380,6 +380,9 @@ paths:
         - AdminApi
       summary: Create a developer key as an admin
       operationId: adminCreateDeveloperKey
+      description: |-
+        Create a developer key in your organization with the given label and return its
+        metadata, including the `key_id`. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -390,7 +393,7 @@ paths:
                 label:
                   $ref: '#/components/schemas/ApiKeyLabel'
       responses:
-        200:
+        '200':
           description: The create function returns a JSON representation of the created API key.
           headers:
             X-Trace-ID:
@@ -399,13 +402,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiKey'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
       security:
         - auth_header: [ ]
@@ -414,8 +417,11 @@ paths:
         - AdminApi
       summary: Get all developer keys as an admin
       operationId: adminGetDeveloperKeys
+      description: |-
+        List every developer key in your organization, including labels, creation and
+        deactivation timestamps, and any configured usage limits. Requires an Admin API key.
       responses:
-        200:
+        '200':
           description: The get function returns a JSON representation of all developer API keys in the organization.
           headers:
             X-Trace-ID:
@@ -426,13 +432,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ApiKey'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
       security:
         - auth_header: [ ]
@@ -442,6 +448,9 @@ paths:
         - AdminApi
       summary: Deactivate a developer key as an admin
       operationId: adminDeactivateDeveloperKey
+      description: |-
+        Deactivate a developer key so it can no longer authenticate API requests.
+        Deactivation is permanent: create a new key to restore access. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -454,7 +463,7 @@ paths:
                 key_id:
                   $ref: '#/components/schemas/ApiKeyId'
       responses:
-        200:
+        '200':
           description: The deactivate function returns a JSON representation of the deactivated API key.
           headers:
             X-Trace-ID:
@@ -463,13 +472,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiKey'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
       security:
         - auth_header: [ ]
@@ -479,6 +488,9 @@ paths:
         - AdminApi
       summary: Rename a developer key as an admin
       operationId: adminRenameDeveloperKey
+      description: |-
+        Change the label of a developer key. Labels are for your own bookkeeping and do not
+        affect the key's permissions. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -496,7 +508,7 @@ paths:
                   description: API key label.
                   example: developer key prod
       responses:
-        200:
+        '200':
           description: The set label function returns a JSON representation of the renamed API key.
           headers:
             X-Trace-ID:
@@ -505,13 +517,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiKey'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
       security:
         - auth_header: [ ]
@@ -521,6 +533,9 @@ paths:
         - AdminApi
       summary: Set developer key usage limits as an admin
       operationId: adminSetDeveloperKeyUsageLimits
+      description: |-
+        Set per-key usage limits for characters and speech-to-text milliseconds. Requests made
+        with the key fail with HTTP 456 once a limit is reached. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -537,7 +552,7 @@ paths:
                 speech_to_text_milliseconds:
                   $ref: '#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds'
       responses:
-        200:
+        '200':
           description: The set usage limits function returns a JSON representation of the modified API key.
           headers:
             X-Trace-ID:
@@ -546,13 +561,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiKey'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
       security:
         - auth_header: [ ]
@@ -562,6 +577,10 @@ paths:
         - TranslateText
       summary: Request Translation
       operationId: translateText
+      description: |-
+        Translate one or more text strings into a target language. Send multiple strings in a
+        single request, within the request size limit, and specify formatting, tag handling,
+        and customization options such as glossaries, style rules, and translation memories.
       parameters:
         - $ref: '#/components/parameters/CustomReportingTag'
       requestBody:
@@ -766,7 +785,7 @@ paths:
                 style: form
                 explode: true
       responses:
-        200:
+        '200':
           description: The translate function returns a JSON representation of the
             translations in the order the text parameters have been specified.
           headers:
@@ -814,25 +833,25 @@ paths:
                             - v1
                           example: v2
 
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        414:
+        '414':
           $ref: '#/components/responses/URITooLong'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        504:
+        '504':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -842,6 +861,10 @@ paths:
         - TranslateDocuments
       summary: Upload and Translate a Document
       operationId: translateDocument
+      description: |-
+        Upload a document for translation and receive a `document_id` and `document_key`. Use
+        them to poll the document status and download the translated file. Translation is
+        asynchronous: the upload response confirms the request, not a finished translation.
       requestBody:
         required: true
         content:
@@ -970,7 +993,7 @@ paths:
                   default: false
                   deprecated: true
       responses:
-        200:
+        '200':
           description: The document function returns a JSON object containing the
             ID and encryption key assigned to the uploaded document. Once received
             by the server, uploaded documents are immediately encrypted using a uniquely
@@ -1001,23 +1024,23 @@ paths:
               example:
                 document_id: 04DE5AD98A02647D83285A36021911C6
                 document_key: 0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        504:
+        '504':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1027,6 +1050,10 @@ paths:
         - TranslateDocuments
       summary: Check Document Status
       operationId: getDocumentStatus
+      description: |-
+        Retrieve the translation status of an uploaded document. Poll this endpoint until the
+        status is `done`, then download the result. The response includes an estimated
+        remaining time while the document is still translating.
       parameters:
         - $ref: '#/components/parameters/DocumentID'
       requestBody:
@@ -1044,7 +1071,7 @@ paths:
             schema:
               $ref: '#/components/schemas/DocumentKey'
       responses:
-        200:
+        '200':
           description: The document status request returns a JSON object containing
             the document ID that was used in the request as well as string indicating
             the current status of the translation process. While the translation is
@@ -1123,23 +1150,23 @@ paths:
                     document_id: 04DE5AD98A02647D83285A36021911C6
                     status: error
                     message: Source and target language are equal.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        504:
+        '504':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1149,6 +1176,10 @@ paths:
         - TranslateDocuments
       summary: Download Translated Document
       operationId: downloadDocument
+      description: |-
+        Download a translated document. The document must have a status of `done`. Each
+        document can be downloaded only once: after a successful download DeepL deletes the
+        file and invalidates the `document_id`.
       parameters:
         - $ref: '#/components/parameters/DocumentID'
       requestBody:
@@ -1166,7 +1197,7 @@ paths:
             schema:
               $ref: '#/components/schemas/DocumentKey'
       responses:
-        200:
+        '200':
           description: The document is provided as a download. There is no other data
             included in the response besides the document data. The content type used
             in the response corresponds to the document type.
@@ -1182,25 +1213,25 @@ paths:
                 OK:
                   summary: OK
                   description: binary document data
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound404DocTransDownload'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable503DocTransDownload'
-        504:
+        '504':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1217,7 +1248,7 @@ paths:
         Retrieve the list of language pairs supported by the glossary feature.
       operationId: listGlossaryLanguages
       responses:
-        200:
+        '200':
           description: A JSON object containing the language pairs in its `supported_languages`
             property.
           headers:
@@ -1253,27 +1284,27 @@ paths:
                     target_lang: en
                   - source_lang: en
                     target_lang: de
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededGlossaries'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1283,6 +1314,10 @@ paths:
         - ManageMultilingualGlossaries
       summary: Create a Glossary
       operationId: createMultilingualGlossary
+      description: |-
+        Create a glossary containing one or more dictionaries, each holding entries for a
+        single source and target language pair. Use the returned `glossary_id` with the
+        translation endpoints to apply your own preferred translations.
       requestBody:
         required: true
         content:
@@ -1306,7 +1341,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateMultilingualGlossaryParameters'
       responses:
-        201:
+        '201':
           description: The function for creating a glossary returns a JSON object
             containing the ID of the newly created glossary and a boolean flag that
             indicates if the created glossary can already be used in translate requests.
@@ -1317,27 +1352,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MultilingualGlossary'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededGlossaries'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1349,7 +1384,7 @@ paths:
       description: List all glossaries and their meta-information, but not the glossary
         entries.
       responses:
-        200:
+        '200':
           description: JSON object containing a the glossaries.
           headers:
             X-Trace-ID:
@@ -1375,27 +1410,27 @@ paths:
                         target_lang: EN
                         entry_count: 2
                     creation_time: '2021-08-03T14:16:18.329Z'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededGlossaries'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1410,7 +1445,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/GlossaryID'
       responses:
-        200:
+        '200':
           description: JSON object containing the glossary meta-information.
           headers:
             X-Trace-ID:
@@ -1430,27 +1465,27 @@ paths:
                     target_lang: EN
                     entry_count: 2
                 creation_time: '2021-08-03T14:16:18.429Z'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededGlossaries'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1481,7 +1516,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchMultilingualGlossaryParameters'
       responses:
-        200:
+        '200':
           description: JSON object containing the glossary meta-information.
           headers:
             X-Trace-ID:
@@ -1502,27 +1537,27 @@ paths:
                     target_lang: EN
                     creation_time: '2021-08-03T14:16:18.429Z'
                     entry_count: 2
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededGlossaries'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1535,29 +1570,29 @@ paths:
       parameters:
         - $ref: '#/components/parameters/GlossaryID'
       responses:
-        204:
+        '204':
           description: Returns no content upon success.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededGlossaries'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1581,7 +1616,7 @@ paths:
           schema:
             $ref: '#/components/schemas/GlossaryTargetLanguage'
       responses:
-        200:
+        '200':
           description: The entries in tsv, wrapped in a JSON object.
           headers:
             X-Trace-ID:
@@ -1596,27 +1631,27 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/MultilingualGlossaryEntries'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededGlossaries'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1626,6 +1661,9 @@ paths:
         - ManageMultilingualGlossaries
       summary: Deletes the dictionary associated with the given language pair with the given glossary ID.
       operationId: deleteDictionary
+      description: |-
+        Delete the dictionary for a single source and target language pair from a glossary,
+        leaving the glossary and its other dictionaries in place.
       parameters:
         - $ref: '#/components/parameters/GlossaryID'
         - name: source_lang
@@ -1639,29 +1677,29 @@ paths:
           schema:
             $ref: '#/components/schemas/GlossaryTargetLanguage'
       responses:
-        204:
+        '204':
           description: Returns no content upon success.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededGlossaries'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1670,6 +1708,9 @@ paths:
         - ManageMultilingualGlossaries
       summary: "Replaces or creates a dictionary in the glossary with the specified entries."
       operationId: replaceDictionary
+      description: |-
+        Replace all entries in the dictionary for a source and target language pair, or create
+        the dictionary if it does not exist yet. Entries not included in the request are removed.
       parameters:
         - $ref: '#/components/parameters/GlossaryID'
       requestBody:
@@ -1679,7 +1720,7 @@ paths:
             schema:
               $ref: '#/components/schemas/MultilingualGlossaryEntries'
       responses:
-        200:
+        '200':
           description: JSON object containing the dictionary meta-information.
           headers:
             X-Trace-ID:
@@ -1692,27 +1733,27 @@ paths:
                 source_lang: EN
                 target_lang: DE
                 entry_count: 1
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededGlossaries'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1722,6 +1763,11 @@ paths:
         - ManageGlossaries
       summary: Create a Glossary
       operationId: createGlossary
+      description: |-
+        **For new integrations we recommend `POST /v3/glossaries`**, which supports multiple
+        language pairs in a single glossary.
+
+        Create a glossary for one source and target language pair and return its `glossary_id`.
       requestBody:
         required: true
         content:
@@ -1740,7 +1786,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateGlossaryParameters'
       responses:
-        201:
+        '201':
           description: The function for creating a glossary returns a JSON object
             containing the ID of the newly created glossary and a boolean flag that
             indicates if the created glossary can already be used in translate requests.
@@ -1751,27 +1797,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MonolingualGlossary'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1783,7 +1829,7 @@ paths:
       description: List all glossaries and their meta-information, but not the glossary
         entries.
       responses:
-        200:
+        '200':
           description: JSON object containing a the glossaries.
           headers:
             X-Trace-ID:
@@ -1806,27 +1852,27 @@ paths:
                     target_lang: DE
                     creation_time: '2021-08-03T14:16:18.329Z'
                     entry_count: 1
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1841,7 +1887,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/GlossaryID'
       responses:
-        200:
+        '200':
           description: JSON object containing the glossary meta-information.
           headers:
             X-Trace-ID:
@@ -1858,27 +1904,27 @@ paths:
                 target_lang: DE
                 creation_time: '2021-08-03T14:16:18.329Z'
                 entry_count: 1
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1891,29 +1937,29 @@ paths:
       parameters:
         - $ref: '#/components/parameters/GlossaryID'
       responses:
-        204:
+        '204':
           description: Returns no content upon success.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1941,7 +1987,7 @@ paths:
                 in: header
                 Accept: text/tab-separated-values
       responses:
-        200:
+        '200':
           description: The entries in the requested format.
           headers:
             X-Trace-ID:
@@ -1949,27 +1995,27 @@ paths:
           content:
             text/tab-separated-values:
               example: "Hello!\tGuten Tag!"
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestGlossaries'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenGlossaries'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeGlossaries'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -1979,6 +2025,10 @@ paths:
         - RephraseText
       summary: Improve text
       operationId: rephraseText
+      description: |-
+        Rewrite one or more texts to improve fluency and readability, optionally targeting a
+        specific writing style or tone. Use the `correct` endpoint instead when you want a
+        minimal spelling and grammar pass rather than broader rewriting.
       requestBody:
         required: true
         content:
@@ -2025,7 +2075,7 @@ paths:
                 tone:
                   $ref: '#/components/schemas/WritingTone'
       responses:
-        200:
+        '200':
           description: Successful text improvement.
           headers:
             X-Trace-ID:
@@ -2053,21 +2103,21 @@ paths:
                           description: The improved text.
                           type: string
                           example: This is a sample sentence to improve.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
-          description: Unsupported Content-Type. Use `application/json` or `application/x-www-form-urlencoded`.
-        429:
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        504:
+        '504':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
         - auth_header: [ ]
@@ -2118,7 +2168,7 @@ paths:
                 target_lang:
                   $ref: '#/components/schemas/TargetLanguageWrite'
       responses:
-        200:
+        '200':
           description: Successful text correction.
           headers:
             X-Trace-ID:
@@ -2146,21 +2196,21 @@ paths:
                           description: The corrected text.
                           type: string
                           example: This is a sample sentence to improve.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
-          description: Unsupported Content-Type. Use `application/json` or `application/x-www-form-urlencoded`.
-        429:
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        504:
+        '504':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
         - auth_header: [ ]
@@ -2170,8 +2220,12 @@ paths:
         - MetaInformation
       summary: Check Usage and Limits
       operationId: getUsage
+      description: |-
+        Retrieve character and minute usage for the current billing period together with the
+        corresponding account limits. Poll this endpoint to track consumption and detect when
+        an account is approaching its quota.
       responses:
-        200:
+        '200':
           description: The account's usage and limits.
           headers:
             X-Trace-ID:
@@ -2226,23 +2280,23 @@ paths:
                     speech_to_speech_minutes_limit: 600
                     start_time: '2025-05-13T09:18:42Z'
                     end_time: '2025-06-13T09:18:42Z'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        504:
+        '504':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -2274,7 +2328,7 @@ paths:
                 in: query
                 type: target
       responses:
-        200:
+        '200':
           description: JSON array where each item represents a supported language.
           headers:
             X-Trace-ID:
@@ -2369,23 +2423,23 @@ paths:
                   name: Vietnamese
                 - language: ZH
                   name: Chinese
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        504:
+        '504':
           $ref: '#/components/responses/ServiceUnavailable'
-        529:
+        '529':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -2413,7 +2467,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateSpokenTermsParameters'
       responses:
-        201:
+        '201':
           description: Successfully created Spoken Terms collection.
           headers:
             X-Trace-ID:
@@ -2422,19 +2476,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SpokenTerms'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestSpokenTerms'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenSpokenTerms'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaType'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceededSpokenTerms'
       security:
         - auth_header: [ ]
@@ -2445,7 +2499,7 @@ paths:
       operationId: listSpokenTerms
       description: List all Spoken Terms collections and their metadata, but not the actual terms.
       responses:
-        200:
+        '200':
           description: JSON object containing all Spoken Terms collections.
           headers:
             X-Trace-ID:
@@ -2467,11 +2521,11 @@ paths:
                       - lang: en
                         entry_count: 3
                     creation_time: '2025-08-03T14:16:18.329Z'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenSpokenTerms'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -2485,7 +2539,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/SpokenTermsID'
       responses:
-        200:
+        '200':
           description: JSON object containing the Spoken Terms metadata.
           headers:
             X-Trace-ID:
@@ -2501,15 +2555,15 @@ paths:
                   - lang: en
                     entry_count: 3
                 creation_time: '2025-08-03T14:16:18.329Z'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestSpokenTerms'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenSpokenTerms'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -2540,7 +2594,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchSpokenTermsParameters'
       responses:
-        200:
+        '200':
           description: Successfully updated Spoken Terms collection.
           headers:
             X-Trace-ID:
@@ -2549,19 +2603,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SpokenTerms'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestSpokenTerms'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenSpokenTerms'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaType'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -2574,17 +2628,17 @@ paths:
       parameters:
         - $ref: '#/components/parameters/SpokenTermsID'
       responses:
-        204:
+        '204':
           description: Successfully deleted Spoken Terms collection.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestSpokenTerms'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenSpokenTerms'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -2605,7 +2659,7 @@ paths:
             type: string
             example: en
       responses:
-        200:
+        '200':
           description: JSON object containing the term list entries.
           headers:
             X-Trace-ID:
@@ -2617,15 +2671,15 @@ paths:
               example:
                 lang: en
                 entries: "DeepL\nAPI\nwebhook"
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestSpokenTerms'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenSpokenTerms'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -2653,7 +2707,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PutSpokenTermsListParameters'
       responses:
-        200:
+        '200':
           description: Successfully replaced or created term list.
           headers:
             X-Trace-ID:
@@ -2662,19 +2716,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SpokenTermsList'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestSpokenTerms'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenSpokenTerms'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        413:
+        '413':
           $ref: '#/components/responses/PayloadTooLarge'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaType'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -2694,17 +2748,17 @@ paths:
             type: string
             example: en
       responses:
-        204:
+        '204':
           description: Successfully deleted term list.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestSpokenTerms'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenSpokenTerms'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -2722,7 +2776,7 @@ paths:
         This allows clients to determine feature availability for a language pair by checking the
         appropriate language's `features` object returned by `GET /v3/languages`.
       responses:
-        200:
+        '200':
           description: JSON array where each item represents a DeepL API product.
           headers:
             X-Trace-ID:
@@ -2802,17 +2856,17 @@ paths:
                       needs_target_support: true
                 - name: style_rules
                   features: []
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
         - auth_header: []
@@ -2865,7 +2919,7 @@ paths:
             - `beta`: Include languages and features in beta, in addition to stable
             - `external`: Include features that rely on third-party service providers
       responses:
-        200:
+        '200':
           description: JSON array where each item represents a supported language.
           headers:
             X-Trace-ID:
@@ -2969,17 +3023,17 @@ paths:
                           status: stable
                         glossary:
                           status: stable
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
         - auth_header: []
@@ -3007,7 +3061,7 @@ paths:
             maximum: 100
           description: The maximum number of translation memories to return. Values above 100 are reduced to 100.
       responses:
-        200:
+        '200':
           description: Returns a list of translation memories.
           headers:
             X-Trace-ID:
@@ -3045,17 +3099,17 @@ paths:
                       - zh
                       segment_count: 23
                     total_count: 2
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3137,7 +3191,7 @@ paths:
                   parameters:
                     display_name: Legal
       responses:
-        202:
+        '202':
           description: |-
             The import job was created. Upload the file to `upload_url` before `expires_at`.
           headers:
@@ -3177,15 +3231,15 @@ paths:
                     job_id: 0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40
                     upload_url: https://assets.deepl.com/upload/0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40
                     expires_at: '2026-08-06T15:34:25.223Z'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           description: |-
             You have reached the maximum number of translation memories for your account. Delete a
             translation memory before creating another one.
@@ -3193,9 +3247,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3223,7 +3277,7 @@ paths:
           description: The identifier of the job, returned when you created the import or export.
           example: 0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40
       responses:
-        200:
+        '200':
           description: Returns the current state of the job.
           headers:
             X-Trace-ID:
@@ -3294,23 +3348,23 @@ paths:
                     - status: failed
                       error:
                         message: The uploaded file is not valid TMX.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           description: The job could not be found.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3335,7 +3389,7 @@ paths:
             $ref: '#/components/schemas/TranslationMemoryId'
           description: The ID of the translation memory to retrieve.
       responses:
-        200:
+        '200':
           description: Returns the translation memory.
           headers:
             X-Trace-ID:
@@ -3356,13 +3410,13 @@ paths:
                     segment_count: 3542
                     creation_time: '2026-04-01T16:34:25.223Z'
                     updated_time: '2026-08-06T09:12:44.108Z'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           description: |-
             The translation memory could not be found. This is also returned for a translation memory that
             belongs to another account.
@@ -3370,11 +3424,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3399,18 +3453,18 @@ paths:
             $ref: '#/components/schemas/TranslationMemoryId'
           description: The ID of the translation memory to delete.
       responses:
-        204:
+        '204':
           description: The translation memory was deleted. The response has no body.
           headers:
             X-Trace-ID:
               $ref: '#/components/headers/X-Trace-ID'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           description: |-
             The translation memory could not be found. This is also returned for a translation memory that
             belongs to another account.
@@ -3418,11 +3472,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3480,7 +3534,7 @@ paths:
             default: false
           description: Whether `filter_text` is matched case-sensitively.
       responses:
-        200:
+        '200':
           description: Returns a page of segments.
           headers:
             X-Trace-ID:
@@ -3550,13 +3604,13 @@ paths:
                         updated_time: '2026-04-01T16:34:25.223Z'
                         last_used_time: '2026-08-01T14:20:09.512Z'
                     segment_count: 3542
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           description: |-
             The translation memory could not be found. This is also returned for a translation memory that
             belongs to another account.
@@ -3564,11 +3618,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3600,7 +3654,7 @@ paths:
             $ref: '#/components/schemas/TranslationMemoryId'
           description: The ID of the translation memory to export.
       responses:
-        200:
+        '200':
           description: An existing export was reused. Poll the returned `job_id` for the download URL.
           headers:
             X-Trace-ID:
@@ -3615,7 +3669,7 @@ paths:
                     job_id: 7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13
                     parameters:
                       translation_memory_id: a74d88fb-ed2a-4943-a664-a4512398b994
-        202:
+        '202':
           description: The export job was created. Poll the returned `job_id` for the download URL.
           headers:
             X-Trace-ID:
@@ -3630,13 +3684,13 @@ paths:
                     job_id: 7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13
                     parameters:
                       translation_memory_id: a74d88fb-ed2a-4943-a664-a4512398b994
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           description: |-
             The translation memory could not be found. This is also returned for a translation memory that
             belongs to another account.
@@ -3644,7 +3698,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        409:
+        '409':
           description: |-
             An export of this translation memory is already in progress. Poll that job instead of starting
             another export.
@@ -3652,11 +3706,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3664,6 +3718,9 @@ paths:
     get:
       summary: Retrieve style rule lists
       operationId: getStyleRuleLists
+      description: |-
+        List the style rule lists in your account. Results are paginated. Set `detailed` to
+        include each list's configured rules and custom instructions.
       parameters:
         - name: page
           in: query
@@ -3686,7 +3743,7 @@ paths:
             default: false
           description: Determines if the rule list's `configured_rules` and `custom_instructions` should be included in the response body.
       responses:
-        200:
+        '200':
           description: JSON object containing the style rule lists.
           headers:
             X-Trace-ID:
@@ -3700,23 +3757,27 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/StyleRuleList'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
     post:
       summary: Create a style rule list
       operationId: createStyleRuleList
+      description: |-
+        Create a style rule list for a single language, optionally with its configured rules
+        and custom instructions. Use the returned `style_id` with the translation endpoints
+        to apply the list.
       requestBody:
         required: true
         content:
@@ -3769,7 +3830,7 @@ paths:
                   prompt: "Have currency symbols before the numerical value (e.g. $100, €100)"
                   source_language: "en"
       responses:
-        201:
+        '201':
           description: Style rule list created successfully
           headers:
             X-Trace-ID:
@@ -3778,19 +3839,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StyleRuleList'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3798,6 +3859,8 @@ paths:
     get:
       summary: Get a style rule list
       operationId: getStyleRuleList
+      description: |-
+        Retrieve a single style rule list, including its configured rules and custom instructions.
       parameters:
         - name: style_id
           in: path
@@ -3806,7 +3869,7 @@ paths:
             type: string
           description: The ID of the style rule list
       responses:
-        200:
+        '200':
           description: Style rule list details
           headers:
             X-Trace-ID:
@@ -3815,25 +3878,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StyleRuleList'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
     patch:
       summary: Update a style rule list's name
       operationId: updateStyleRuleList
+      description: |-
+        Rename a style rule list. This does not change its configured rules or custom instructions.
       parameters:
         - name: style_id
           in: path
@@ -3851,7 +3916,7 @@ paths:
                 name:
                   $ref: '#/components/schemas/StyleRuleName'
       responses:
-        200:
+        '200':
           description: Style rule list updated successfully
           headers:
             X-Trace-ID:
@@ -3860,27 +3925,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StyleRuleList'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
     delete:
       summary: Delete a style rule list
       operationId: deleteStyleRuleList
+      description: |-
+        Delete a style rule list and its custom instructions. Requests that reference the
+        deleted `style_id` fail afterwards.
       parameters:
         - name: style_id
           in: path
@@ -3889,24 +3957,24 @@ paths:
             type: string
           description: The ID of the style rule list
       responses:
-        204:
+        '204':
           description: Style rule list deleted successfully
           headers:
             X-Trace-ID:
               $ref: '#/components/headers/X-Trace-ID'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3914,6 +3982,9 @@ paths:
     put:
       summary: Replace configured rules for a style rule list
       operationId: updateStyleRuleConfiguredRules
+      description: |-
+        Replace the full set of configured rules on a style rule list. Rules not included in
+        the request are removed, so send the complete set you want to keep.
       parameters:
         - name: style_id
           in: path
@@ -3933,7 +4004,7 @@ paths:
               punctuation:
                 periods_in_academic_degrees: "do_not_use"
       responses:
-        200:
+        '200':
           description: Configured rules updated successfully
           headers:
             X-Trace-ID:
@@ -3942,19 +4013,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StyleRuleList'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -3962,6 +4033,9 @@ paths:
     post:
       summary: Create a custom instruction
       operationId: createCustomInstruction
+      description: |-
+        Add a custom instruction to a style rule list to express a style preference that the
+        predefined rules do not cover. Instructions apply to text in the given source language.
       parameters:
         - name: style_id
           in: path
@@ -3996,7 +4070,7 @@ paths:
               label: "Currency custom instruction"
               prompt: "Have currency symbols before the numerical value (e.g. $100, €100)"
       responses:
-        201:
+        '201':
           description: Custom instruction created successfully
           headers:
             X-Trace-ID:
@@ -4005,21 +4079,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomInstruction'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -4027,6 +4101,8 @@ paths:
     get:
       summary: Get a custom instruction
       operationId: getCustomInstruction
+      description: |-
+        Retrieve a single custom instruction from a style rule list.
       parameters:
         - name: style_id
           in: path
@@ -4041,7 +4117,7 @@ paths:
             type: string
           description: The ID of the custom instruction
       responses:
-        200:
+        '200':
           description: Custom instruction details
           headers:
             X-Trace-ID:
@@ -4050,25 +4126,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomInstruction'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
     put:
       summary: Replace a custom instruction
       operationId: updateCustomInstruction
+      description: |-
+        Replace a custom instruction. Send every field you want to keep, because omitted
+        fields are overwritten.
       parameters:
         - name: style_id
           in: path
@@ -4104,7 +4183,7 @@ paths:
                   type: string
                   description: Optional source language code
       responses:
-        200:
+        '200':
           description: Custom instruction updated successfully
           headers:
             X-Trace-ID:
@@ -4113,25 +4192,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomInstruction'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
     delete:
       summary: Delete a custom instruction
       operationId: deleteCustomInstruction
+      description: |-
+        Delete a custom instruction from a style rule list. The rest of the list is unchanged.
       parameters:
         - name: style_id
           in: path
@@ -4146,24 +4227,24 @@ paths:
             type: string
           description: The ID of the custom instruction
       responses:
-        204:
+        '204':
           description: Custom instruction deleted successfully
           headers:
             X-Trace-ID:
               $ref: '#/components/headers/X-Trace-ID'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/ForbiddenScoped'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
@@ -4176,6 +4257,11 @@ paths:
         - VoiceAPI
       summary: Get Streaming URL
       operationId: getVoiceStreamingUrl
+      description: |-
+        Create a real-time voice session and return the WebSocket URL and ephemeral token used
+        to stream audio. Session options such as languages, message format, and media types are
+        fixed at creation time. Invalid options are rejected with HTTP 400 before a session is
+        created.
       parameters:
         - $ref: '#/components/parameters/CustomReportingTag'
       requestBody:
@@ -4305,7 +4391,7 @@ paths:
                   target_media_languages: ['de']
                   target_media_content_type: 'audio/opus'
       responses:
-        200:
+        '200':
           description: Successfully obtained streaming URL and token.
           headers:
             X-Trace-ID:
@@ -4318,19 +4404,19 @@ paths:
                 streaming_url: 'wss://api.deepl.com/v3/voice/realtime/connect'
                 token: 'VGhpcyBpcyBhIGZha2UgdG9rZW4K'
                 session_id: '4f911080-cfe2-41d4-8269-0e6ec15a0354'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
         - auth_header: []
@@ -4339,6 +4425,10 @@ paths:
         - VoiceAPI
       summary: Request Reconnection
       operationId: requestReconnection
+      description: |-
+        Exchange a session token for a fresh WebSocket URL and token so a client can rejoin a
+        voice session after the connection drops. Session options are carried over from the
+        original session.
       parameters:
         - name: token
           in: query
@@ -4348,7 +4438,7 @@ paths:
             type: string
           example: 'VGhpcyBpcyBhIGZha2UgdG9rZW4K'
       responses:
-        200:
+        '200':
           description: Successfully obtained streaming URL and reconnection token.
           headers:
             X-Trace-ID:
@@ -4361,19 +4451,19 @@ paths:
                 streaming_url: 'wss://api.deepl.com/v3/voice/realtime/connect'
                 token: 'VGhpcyBpcyBhIGZha2UgdG9rZW4K'
                 session_id: '4f911080-cfe2-41d4-8269-0e6ec15a0354'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
-        456:
+        '456':
           $ref: '#/components/responses/QuotaExceeded'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
-        503:
+        '503':
           $ref: '#/components/responses/ServiceUnavailable'
       security:
         - auth_header: []
@@ -4532,7 +4622,7 @@ paths:
                 - source: Please share these results with your teams by Friday.
                   target: Bitte teilen Sie diese Ergebnisse mit Ihrem Team.
       responses:
-        202:
+        '202':
           description: Job accepted. Use the returned `poll_url` to retrieve the result.
           headers:
             Retry-After:
@@ -4547,7 +4637,7 @@ paths:
               example:
                 job_id: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
                 poll_url: /v1/quality-evaluation/f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
-        400:
+        '400':
           description: |-
             Request validation failed. Common causes:
             - `metadata.source_language`, `metadata.target_language`, or `segments` is missing or empty.
@@ -4560,7 +4650,7 @@ paths:
                 $ref: '#/components/schemas/QualityEvaluationApiError'
               example:
                 message: segments[0].source is required.
-        403:
+        '403':
           description: |-
             Authorization failed. Common causes:
             - The API key does not have access to the Quality Evaluation feature.
@@ -4571,7 +4661,7 @@ paths:
                 $ref: '#/components/schemas/QualityEvaluationApiError'
               example:
                 message: Forbidden
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -4593,7 +4683,7 @@ paths:
             format: uuid
             example: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
       responses:
-        200:
+        '200':
           description: |-
             Polling result. The response shape depends on the `status` field. `done` returns the full evaluation report; `error` returns error details.
           content:
@@ -4647,7 +4737,7 @@ paths:
                         Minor: 1
                       Omission:
                         Major: 1
-        202:
+        '202':
           description: Job is still processing. Continue polling after the time suggested by the `Retry-After` header.
           headers:
             Retry-After:
@@ -4662,7 +4752,7 @@ paths:
               example:
                 job_id: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
                 status: processing
-        400:
+        '400':
           description: Invalid `job_id` format. The `job_id` must be a valid UUID.
           content:
             application/json:
@@ -4670,7 +4760,7 @@ paths:
                 $ref: '#/components/schemas/QualityEvaluationApiError'
               example:
                 message: job_id must be a valid UUID.
-        404:
+        '404':
           description: |-
             Job not found. The `job_id` is well-formed but no job exists with that ID, or it has expired. Jobs are retained for 24 hours after reaching `done` or `error` state.
           content:
@@ -4679,7 +4769,7 @@ paths:
                 $ref: '#/components/schemas/QualityEvaluationApiError'
               example:
                 message: Quality estimation job not found.
-        429:
+        '429':
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
@@ -4821,6 +4911,10 @@ components:
       description: Forbidden. The access to the requested resource is denied, because
         of insufficient access rights. This error is also returned when the API key
         is scoped but does not include the scope required for this endpoint.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     NotFound:
       description: The requested resource could not be found.
       content:
@@ -4851,9 +4945,19 @@ components:
       description: The request URL is too long. You can avoid this error by using
         a POST request instead of a GET request, and sending the parameters in the
         HTTP body.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - $ref: '#/components/schemas/InfrastructureErrorResponse'
     UnsupportedMediaTypeGlossaries:
       description: The requested entries format specified in the `Accept` header is
         not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     TooManyRequests:
       description: Too many requests. Please wait and resend your request.
       content:
@@ -4868,6 +4972,10 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
     QuotaExceededGlossaries:
       description: Quota exceeded. Too many requests were made to the glossary endpoints recently.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     BadRequestSpokenTerms:
       description: Bad request. Please check error message and your parameters.
       content:
@@ -4902,8 +5010,20 @@ components:
             message: "Unsupported Content-Type"
     InternalServerError:
       description: Internal error.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - $ref: '#/components/schemas/InfrastructureErrorResponse'
     ServiceUnavailable:
       description: Resource currently unavailable. Try again later.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - $ref: '#/components/schemas/InfrastructureErrorResponse'
     ServiceUnavailable503DocTransDownload:
       description: |-
         A 503 result will be returned if the user tries to download a translated document that is currently being processed and is not yet ready for download.
@@ -6590,6 +6710,7 @@ components:
       default: '1'
       enum:
       - '0'
+      - '1'
     PatchMultilingualGlossaryParameters:
       type: object
       properties:
@@ -7430,7 +7551,6 @@ components:
         - uk
         - vi
         - zh
-      default:
       example: en
     VoiceSourceLanguageMode:
       type: string
@@ -7840,6 +7960,24 @@ components:
           type: number
           description: Duration of speech-to-speech usage in minutes.
           example: 4.2
+    InfrastructureErrorResponse:
+      description: >
+        Error body returned by DeepL's edge infrastructure for failures that occur before a
+        request reaches the API itself. The message is nested under `error`, unlike the
+        application-level `ErrorResponse`. Clients that parse error bodies should handle both shapes.
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              description: A human-readable description of the error.
+              example: Bad Gateway.
     ErrorResponse:
       type: object
       required:

@@ -450,6 +450,7 @@
         ],
         "summary": "Create a developer key as an admin",
         "operationId": "adminCreateDeveloperKey",
+        "description": "Create a developer key in your organization with the given label and return its\nmetadata, including the `key_id`. Requires an Admin API key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -506,6 +507,7 @@
         ],
         "summary": "Get all developer keys as an admin",
         "operationId": "adminGetDeveloperKeys",
+        "description": "List every developer key in your organization, including labels, creation and\ndeactivation timestamps, and any configured usage limits. Requires an Admin API key.",
         "responses": {
           "200": {
             "description": "The get function returns a JSON representation of all developer API keys in the organization.",
@@ -552,6 +554,7 @@
         ],
         "summary": "Deactivate a developer key as an admin",
         "operationId": "adminDeactivateDeveloperKey",
+        "description": "Deactivate a developer key so it can no longer authenticate API requests.\nDeactivation is permanent: create a new key to restore access. Requires an Admin API key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -613,6 +616,7 @@
         ],
         "summary": "Rename a developer key as an admin",
         "operationId": "adminRenameDeveloperKey",
+        "description": "Change the label of a developer key. Labels are for your own bookkeeping and do not\naffect the key's permissions. Requires an Admin API key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -680,6 +684,7 @@
         ],
         "summary": "Set developer key usage limits as an admin",
         "operationId": "adminSetDeveloperKeyUsageLimits",
+        "description": "Set per-key usage limits for characters and speech-to-text milliseconds. Requests made\nwith the key fail with HTTP 456 once a limit is reached. Requires an Admin API key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -747,6 +752,7 @@
         ],
         "summary": "Request Translation",
         "operationId": "translateText",
+        "description": "Translate one or more text strings into a target language. Send multiple strings in a\nsingle request, within the request size limit, and specify formatting, tag handling,\nand customization options such as glossaries, style rules, and translation memories.",
         "parameters": [
           {
             "$ref": "#/components/parameters/CustomReportingTag"
@@ -1082,6 +1088,7 @@
         ],
         "summary": "Upload and Translate a Document",
         "operationId": "translateDocument",
+        "description": "Upload a document for translation and receive a `document_id` and `document_key`. Use\nthem to poll the document status and download the translated file. Translation is\nasynchronous: the upload response confirms the request, not a finished translation.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1284,6 +1291,7 @@
         ],
         "summary": "Check Document Status",
         "operationId": "getDocumentStatus",
+        "description": "Retrieve the translation status of an uploaded document. Poll this endpoint until the\nstatus is `done`, then download the result. The response includes an estimated\nremaining time while the document is still translating.",
         "parameters": [
           {
             "$ref": "#/components/parameters/DocumentID"
@@ -1439,6 +1447,7 @@
         ],
         "summary": "Download Translated Document",
         "operationId": "downloadDocument",
+        "description": "Download a translated document. The document must have a status of `done`. Each\ndocument can be downloaded only once: after a successful download DeepL deletes the\nfile and invalidates the `document_id`.",
         "parameters": [
           {
             "$ref": "#/components/parameters/DocumentID"
@@ -1638,6 +1647,7 @@
         ],
         "summary": "Create a Glossary",
         "operationId": "createMultilingualGlossary",
+        "description": "Create a glossary containing one or more dictionaries, each holding entries for a\nsingle source and target language pair. Use the returned `glossary_id` with the\ntranslation endpoints to apply your own preferred translations.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2184,6 +2194,7 @@
         ],
         "summary": "Deletes the dictionary associated with the given language pair with the given glossary ID.",
         "operationId": "deleteDictionary",
+        "description": "Delete the dictionary for a single source and target language pair from a glossary,\nleaving the glossary and its other dictionaries in place.",
         "parameters": [
           {
             "$ref": "#/components/parameters/GlossaryID"
@@ -2255,6 +2266,7 @@
         ],
         "summary": "Replaces or creates a dictionary in the glossary with the specified entries.",
         "operationId": "replaceDictionary",
+        "description": "Replace all entries in the dictionary for a source and target language pair, or create\nthe dictionary if it does not exist yet. Entries not included in the request are removed.",
         "parameters": [
           {
             "$ref": "#/components/parameters/GlossaryID"
@@ -2339,6 +2351,7 @@
         ],
         "summary": "Create a Glossary",
         "operationId": "createGlossary",
+        "description": "**For new integrations we recommend `POST /v3/glossaries`**, which supports multiple\nlanguage pairs in a single glossary.\n\nCreate a glossary for one source and target language pair and return its `glossary_id`.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2734,6 +2747,7 @@
         ],
         "summary": "Improve text",
         "operationId": "rephraseText",
+        "description": "Rewrite one or more texts to improve fluency and readability, optionally targeting a\nspecific writing style or tone. Use the `correct` endpoint instead when you want a\nminimal spelling and grammar pass rather than broader rewriting.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2851,7 +2865,7 @@
             "$ref": "#/components/responses/PayloadTooLarge"
           },
           "415": {
-            "description": "Unsupported Content-Type. Use `application/json` or `application/x-www-form-urlencoded`."
+            "$ref": "#/components/responses/UnsupportedMediaType"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
@@ -2986,7 +3000,7 @@
             "$ref": "#/components/responses/PayloadTooLarge"
           },
           "415": {
-            "description": "Unsupported Content-Type. Use `application/json` or `application/x-www-form-urlencoded`."
+            "$ref": "#/components/responses/UnsupportedMediaType"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
@@ -3015,6 +3029,7 @@
         ],
         "summary": "Check Usage and Limits",
         "operationId": "getUsage",
+        "description": "Retrieve character and minute usage for the current billing period together with the\ncorresponding account limits. Poll this endpoint to track consumption and detect when\nan account is approaching its quota.",
         "responses": {
           "200": {
             "description": "The account's usage and limits.",
@@ -5167,6 +5182,7 @@
       "get": {
         "summary": "Retrieve style rule lists",
         "operationId": "getStyleRuleLists",
+        "description": "List the style rule lists in your account. Results are paginated. Set `detailed` to\ninclude each list's configured rules and custom instructions.",
         "parameters": [
           {
             "name": "page",
@@ -5250,6 +5266,7 @@
       "post": {
         "summary": "Create a style rule list",
         "operationId": "createStyleRuleList",
+        "description": "Create a style rule list for a single language, optionally with its configured rules\nand custom instructions. Use the returned `style_id` with the translation endpoints\nto apply the list.",
         "requestBody": {
           "required": true,
           "content": {
@@ -5373,6 +5390,7 @@
       "get": {
         "summary": "Get a style rule list",
         "operationId": "getStyleRuleList",
+        "description": "Retrieve a single style rule list, including its configured rules and custom instructions.",
         "parameters": [
           {
             "name": "style_id",
@@ -5431,6 +5449,7 @@
       "patch": {
         "summary": "Update a style rule list's name",
         "operationId": "updateStyleRuleList",
+        "description": "Rename a style rule list. This does not change its configured rules or custom instructions.",
         "parameters": [
           {
             "name": "style_id",
@@ -5507,6 +5526,7 @@
       "delete": {
         "summary": "Delete a style rule list",
         "operationId": "deleteStyleRuleList",
+        "description": "Delete a style rule list and its custom instructions. Requests that reference the\ndeleted `style_id` fail afterwards.",
         "parameters": [
           {
             "name": "style_id",
@@ -5560,6 +5580,7 @@
       "put": {
         "summary": "Replace configured rules for a style rule list",
         "operationId": "updateStyleRuleConfiguredRules",
+        "description": "Replace the full set of configured rules on a style rule list. Rules not included in\nthe request are removed, so send the complete set you want to keep.",
         "parameters": [
           {
             "name": "style_id",
@@ -5638,6 +5659,7 @@
       "post": {
         "summary": "Create a custom instruction",
         "operationId": "createCustomInstruction",
+        "description": "Add a custom instruction to a style rule list to express a style preference that the\npredefined rules do not cover. Instructions apply to text in the given source language.",
         "parameters": [
           {
             "name": "style_id",
@@ -5737,6 +5759,7 @@
       "get": {
         "summary": "Get a custom instruction",
         "operationId": "getCustomInstruction",
+        "description": "Retrieve a single custom instruction from a style rule list.",
         "parameters": [
           {
             "name": "style_id",
@@ -5804,6 +5827,7 @@
       "put": {
         "summary": "Replace a custom instruction",
         "operationId": "updateCustomInstruction",
+        "description": "Replace a custom instruction. Send every field you want to keep, because omitted\nfields are overwritten.",
         "parameters": [
           {
             "name": "style_id",
@@ -5901,6 +5925,7 @@
       "delete": {
         "summary": "Delete a custom instruction",
         "operationId": "deleteCustomInstruction",
+        "description": "Delete a custom instruction from a style rule list. The rest of the list is unchanged.",
         "parameters": [
           {
             "name": "style_id",
@@ -5972,6 +5997,7 @@
         ],
         "summary": "Get Streaming URL",
         "operationId": "getVoiceStreamingUrl",
+        "description": "Create a real-time voice session and return the WebSocket URL and ephemeral token used\nto stream audio. Session options such as languages, message format, and media types are\nfixed at creation time. Invalid options are rejected with HTTP 400 before a session is\ncreated.",
         "parameters": [
           {
             "$ref": "#/components/parameters/CustomReportingTag"
@@ -6209,6 +6235,7 @@
         ],
         "summary": "Request Reconnection",
         "operationId": "requestReconnection",
+        "description": "Exchange a session token for a fresh WebSocket URL and token so a client can rejoin a\nvoice session after the connection drops. Session options are carried over from the\noriginal session.",
         "parameters": [
           {
             "name": "token",
@@ -6926,7 +6953,14 @@
         }
       },
       "ForbiddenGlossaries": {
-        "description": "Forbidden. The access to the requested resource is denied, because of insufficient access rights. This error is also returned when the API key is scoped but does not include the scope required for this endpoint."
+        "description": "Forbidden. The access to the requested resource is denied, because of insufficient access rights. This error is also returned when the API key is scoped but does not include the scope required for this endpoint.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
       },
       "NotFound": {
         "description": "The requested resource could not be found.",
@@ -6967,10 +7001,31 @@
         }
       },
       "URITooLong": {
-        "description": "The request URL is too long. You can avoid this error by using a POST request instead of a GET request, and sending the parameters in the HTTP body."
+        "description": "The request URL is too long. You can avoid this error by using a POST request instead of a GET request, and sending the parameters in the HTTP body.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/InfrastructureErrorResponse"
+                }
+              ]
+            }
+          }
+        }
       },
       "UnsupportedMediaTypeGlossaries": {
-        "description": "The requested entries format specified in the `Accept` header is not supported."
+        "description": "The requested entries format specified in the `Accept` header is not supported.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
       },
       "TooManyRequests": {
         "description": "Too many requests. Please wait and resend your request.",
@@ -6993,7 +7048,14 @@
         }
       },
       "QuotaExceededGlossaries": {
-        "description": "Quota exceeded. Too many requests were made to the glossary endpoints recently."
+        "description": "Quota exceeded. Too many requests were made to the glossary endpoints recently.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
       },
       "BadRequestSpokenTerms": {
         "description": "Bad request. Please check error message and your parameters.",
@@ -7048,10 +7110,38 @@
         }
       },
       "InternalServerError": {
-        "description": "Internal error."
+        "description": "Internal error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/InfrastructureErrorResponse"
+                }
+              ]
+            }
+          }
+        }
       },
       "ServiceUnavailable": {
-        "description": "Resource currently unavailable. Try again later."
+        "description": "Resource currently unavailable. Try again later.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/InfrastructureErrorResponse"
+                }
+              ]
+            }
+          }
+        }
       },
       "ServiceUnavailable503DocTransDownload": {
         "description": "A 503 result will be returned if the user tries to download a translated document that is currently being processed and is not yet ready for download.\nPlease make sure to check that the document status is 'done' before trying to send a download request.",
@@ -9139,7 +9229,8 @@
         "type": "string",
         "default": "1",
         "enum": [
-          "0"
+          "0",
+          "1"
         ]
       },
       "PatchMultilingualGlossaryParameters": {
@@ -10037,7 +10128,6 @@
           "vi",
           "zh"
         ],
-        "default": null,
         "example": "en"
       },
       "VoiceSourceLanguageMode": {
@@ -10472,6 +10562,28 @@
             "type": "number",
             "description": "Duration of speech-to-speech usage in minutes.",
             "example": 4.2
+          }
+        }
+      },
+      "InfrastructureErrorResponse": {
+        "description": "Error body returned by DeepL's edge infrastructure for failures that occur before a request reaches the API itself. The message is nested under `error`, unlike the application-level `ErrorResponse`. Clients that parse error bodies should handle both shapes.\n",
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "message"
+            ],
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "A human-readable description of the error.",
+                "example": "Bad Gateway."
+              }
+            }
           }
         }
       },
