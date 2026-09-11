@@ -6133,6 +6133,20 @@
                     "target_media_voice": "female"
                   }
                 },
+                "with_speaker_match": {
+                  "summary": "With translated audio using a speaker-matched voice",
+                  "value": {
+                    "source_media_content_type": "audio/ogg;codecs=opus",
+                    "source_language": "en",
+                    "target_languages": [
+                      "de"
+                    ],
+                    "target_media_languages": [
+                      "de"
+                    ],
+                    "target_media_voice": "match"
+                  }
+                },
                 "with_tts_short_form": {
                   "summary": "With translated audio using short-form MIME types",
                   "value": {
@@ -10038,7 +10052,7 @@
         "example": "formal"
       },
       "VoiceMessageFormat": {
-        "description": "Message encoding format for WebSocket communication. Determines how messages are serialized and transmitted.\nUsing `json`,  messages are JSON-encoded and sent as TEXT WebSocket frames. All binary fields (such as audio data) are base64-encoded strings.\nUsing `msgpack`, messages are MessagePack-encoded and sent as BINARY WebSocket frames. All binary fields (such as audio data) contain raw binary data.\n\nFor more details, see [Message Encoding](/api-reference/voice#message-encoding).",
+        "description": "Message encoding format for WebSocket communication. Determines how messages are serialized and transmitted.\nUsing `json`,  messages are JSON-encoded and sent as TEXT WebSocket frames. All binary fields (such as audio data) are base64-encoded strings.\nUsing `msgpack`, messages are MessagePack-encoded and sent as BINARY WebSocket frames. All binary fields (such as audio data) contain raw binary data.\n\nFor more details, see [Message Encoding](/docs/voice/message-encoding).",
         "type": "string",
         "enum": [
           "json",
@@ -10048,11 +10062,12 @@
         "example": "json"
       },
       "VoiceTargetMediaVoice": {
-        "description": "Target audio voice selection for synthesized speech. The default voice is language dependent.",
+        "description": "Target audio voice selection for synthesized speech. The default voice is language dependent.\nUse `match` for speaker match, which produces translated speech with a voice close to the speaker's voice. Speaker match is only available for target languages whose translated speech is provided by DeepL, not for languages provided through external service partners. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\nRequesting `match` for a target language that does not support it is not an error: the session is created and that language's translated speech uses a preset voice instead.\n",
         "type": "string",
         "enum": [
           "male",
-          "female"
+          "female",
+          "match"
         ],
         "example": "female"
       },
@@ -10084,7 +10099,7 @@
       },
       "VoiceSourceLanguage": {
         "type": "string",
-        "description": "The source language of the audio stream. It can be left empty or must be one of the supported Voice API source languages and comply with IETF BCP 47 language tags.\nNote: Some source transcription languages are provided through external service partners. See the [supported languages table](/api-reference/voice#show-supported-languages) for details.\n",
+        "description": "The source language of the audio stream. It can be left empty or must be one of the supported Voice API source languages and comply with IETF BCP 47 language tags.\nNote: Some source transcription languages are provided through external service partners. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\n",
         "enum": [
           "ar",
           "bg",
@@ -10142,7 +10157,7 @@
       },
       "VoiceTargetLanguages": {
         "type": "array",
-        "description": "List of target languages for translation. The stream will emit translations for each language. Language identifiers must comply with IETF BCP 47. See the [supported languages table](/api-reference/voice#show-supported-languages) for details.\n",
+        "description": "List of target languages for translation. The stream will emit translations for each language. Language identifiers must comply with IETF BCP 47. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\n",
         "items": {
           "type": "string",
           "enum": [
@@ -10207,7 +10222,7 @@
       },
       "VoiceTargetMediaLanguages": {
         "type": "array",
-        "description": "List of target languages for which to generate synthesized audio. Languages specified here will automatically be added to target_languages if not already present, ensuring you receive both text translation and audio synthesis for these languages. If omitted, only text transcription and translation will be provided (no audio synthesis). Language identifiers must comply with IETF BCP 47.\nNote: Some translated audio languages are provided through external service partners. See the [supported languages table](/api-reference/voice#show-supported-languages) for details.\n",
+        "description": "List of target languages for which to generate synthesized audio. Languages specified here will automatically be added to target_languages if not already present, ensuring you receive both text translation and audio synthesis for these languages. If omitted, only text transcription and translation will be provided (no audio synthesis). Language identifiers must comply with IETF BCP 47.\nNote: Some translated audio languages are provided through external service partners. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\n",
         "items": {
           "type": "string",
           "enum": [

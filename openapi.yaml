@@ -4366,6 +4366,14 @@ paths:
                   target_media_languages: ['de']
                   target_media_content_type: 'audio/webm;codecs=opus'
                   target_media_voice: 'female'
+              with_speaker_match:
+                summary: With translated audio using a speaker-matched voice
+                value:
+                  source_media_content_type: 'audio/ogg;codecs=opus'
+                  source_language: 'en'
+                  target_languages: ['de']
+                  target_media_languages: ['de']
+                  target_media_voice: 'match'
               with_tts_short_form:
                 summary: With translated audio using short-form MIME types
                 value:
@@ -7427,7 +7435,7 @@ components:
         Using `json`,  messages are JSON-encoded and sent as TEXT WebSocket frames. All binary fields (such as audio data) are base64-encoded strings.
         Using `msgpack`, messages are MessagePack-encoded and sent as BINARY WebSocket frames. All binary fields (such as audio data) contain raw binary data.
 
-        For more details, see [Message Encoding](/api-reference/voice#message-encoding).
+        For more details, see [Message Encoding](/docs/voice/message-encoding).
       type: string
       enum:
         - json
@@ -7435,11 +7443,21 @@ components:
       default: json
       example: json
     VoiceTargetMediaVoice:
-      description: Target audio voice selection for synthesized speech. The default voice is language dependent.
+      description: >
+        Target audio voice selection for synthesized speech. The default voice is language dependent.
+
+        Use `match` for speaker match, which produces translated speech with a voice close to
+        the speaker's voice. Speaker match is only available for target languages whose translated
+        speech is provided by DeepL, not for languages provided through external service partners.
+        See the [supported languages table](/docs/voice/supported-voice-languages) for details.
+
+        Requesting `match` for a target language that does not support it is not an error: the
+        session is created and that language's translated speech uses a preset voice instead.
       type: string
       enum:
       - male
       - female
+      - match
       example: female
     VoiceSourceMediaContentType:
       type: string
@@ -7508,7 +7526,7 @@ components:
         supported Voice API source languages and comply with IETF BCP 47 language tags.
 
         Note: Some source transcription languages are provided through external service partners.
-        See the [supported languages table](/api-reference/voice#show-supported-languages) for details.
+        See the [supported languages table](/docs/voice/supported-voice-languages) for details.
       enum:
         - ar
         - bg
@@ -7568,7 +7586,7 @@ components:
       description: >
         List of target languages for translation. The stream will emit translations for each language.
         Language identifiers must comply with IETF BCP 47.
-        See the [supported languages table](/api-reference/voice#show-supported-languages) for details.
+        See the [supported languages table](/docs/voice/supported-voice-languages) for details.
       items:
         type: string
         enum:
@@ -7635,7 +7653,7 @@ components:
         Language identifiers must comply with IETF BCP 47.
 
         Note: Some translated audio languages are provided through external service partners.
-        See the [supported languages table](/api-reference/voice#show-supported-languages) for details.
+        See the [supported languages table](/docs/voice/supported-voice-languages) for details.
       items:
         type: string
         enum:
