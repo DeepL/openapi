@@ -9788,7 +9788,7 @@
       },
       "TranslationMemoryThreshold": {
         "type": "integer",
-        "description": "The minimum matching percentage required for a translation memory segment to be applied (recommended to be 75% or higher).",
+        "description": "The minimum matching percentage required for a translation memory segment to be applied (recommended to be 75% or higher). A value below 50 is treated as 50.",
         "minimum": 0,
         "maximum": 100,
         "default": 75,
