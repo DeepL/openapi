@@ -7531,6 +7531,7 @@ components:
         - ar
         - bg
         - bn
+        - ca
         - cs
         - da
         - de
@@ -7541,6 +7542,7 @@ components:
         - fi
         - fr
         - ga
+        - gl
         - he
         - hi
         - hr
@@ -7593,6 +7595,7 @@ components:
           - ar
           - bg
           - bn
+          - ca
           - cs
           - da
           - de
@@ -7607,6 +7610,7 @@ components:
           - fr-CA
           - fr-FR
           - ga
+          - gl
           - he
           - hi
           - hr
@@ -7659,6 +7663,7 @@ components:
         enum:
           - ar
           - bg
+          - ca
           - cs
           - da
           - de
@@ -7671,6 +7676,8 @@ components:
           - fr
           - fr-CA
           - fr-FR
+          - gl
+          - he
           - hi
           - hr
           - hu
@@ -7688,8 +7695,10 @@ components:
           - ro
           - ru
           - sk
+          - sl
           - sv
           - ta
+          - th
           - tl
           - tr
           - uk
