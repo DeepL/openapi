@@ -115,7 +115,7 @@ tags:
   description: Endpoints for organization administrators to manage API keys and retrieve usage analytics.
 - name: QualityEvaluation
   description: |-
-    **Closed alpha.** Evaluate translation quality. Submit source/target segment pairs and retrieve per-segment quality issues categorized by error type and severity, with character spans pointing to where each issue occurs.
+    **Beta.** Retrieve a quality evaluation report for a document DeepL has translated. Reports are requested with `enable_quality_evaluation` on `POST /v2/document` and polled here. A report lists per-segment quality issues categorized by error type and severity, with character spans pointing to where each issue occurs.
 x-hideTryItPanel: true
 x-codeSamples: false
 paths:
@@ -910,6 +910,13 @@ paths:
                   file: '@document.docx'
                   translation_memory_id: '[yourTranslationMemoryId]'
                   translation_memory_threshold: 75
+              QualityEvaluation:
+                summary: Requesting a quality evaluation report (beta)
+                value:
+                  source_lang: EN
+                  target_lang: DE
+                  file: '@document.docx'
+                  enable_quality_evaluation: true
             schema:
               type: object
               required:
@@ -986,6 +993,15 @@ paths:
                     Only supported for `docx` and `pdf` output. For all other output formats the parameter is ignored and the document is returned without a watermark.
                   type: boolean
                   default: false
+                enable_quality_evaluation:
+                  description: |-
+                    (beta) When `true`, DeepL also evaluates the finished translation and returns a `quality_evaluation_job_id`. Poll [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluations/poll) with it for a per-segment report of translation issues. The translation itself is unaffected.
+
+                    **Important:** Available to select customers; contact your customer success manager to enable it. Supported for `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, and XLIFF 2.1 uploads, and for the [supported language pairs](/api-reference/quality-evaluations/poll#supported-language-pairs) only.
+
+                    Rejected before the upload is accepted: `403` if quality evaluation is not enabled for the account, `400` for an ineligible file type, an unsupported language pair, or a value other than `true` or `false`.
+                  type: boolean
+                  default: false
                 enable_beta_languages:
                   description: |-
                     This parameter is maintained for backward compatibility and has no effect.
@@ -1021,6 +1037,11 @@ paths:
                       this particular document.
                     type: string
                     example: 0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A
+                  quality_evaluation_job_id:
+                    description: |-
+                      (beta) A unique ID assigned to the quality evaluation. Returned only when the request set `enable_quality_evaluation=true`. Use it to retrieve the report from [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluations/poll).
+                    type: string
+                    example: 04DE5AD98A02647D83285A36021911C6
               example:
                 document_id: 04DE5AD98A02647D83285A36021911C6
                 document_key: 0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A
@@ -4606,94 +4627,28 @@ paths:
           $ref: '#/components/responses/NotFound'
         "429":
           $ref: '#/components/responses/TooManyRequests'
-  /v1/quality-evaluation:
-    post:
-      tags:
-        - QualityEvaluation
-      summary: Submit an evaluation job
-      operationId: submitQualityEvaluation
-      description: |-
-        Starts an evaluation job for the given segments. Returns a `poll_url` that can be used to retrieve the result.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/QualityEvaluationRequest'
-            example:
-              metadata:
-                source_language: en
-                target_language: de
-              segments:
-                - source: Our Q3 revenue came in 5% above forecast.
-                  target: Unser Q3-Umsatz lag 5 % unter der Prognose.
-                - source: Please share these results with your teams by Friday.
-                  target: Bitte teilen Sie diese Ergebnisse mit Ihrem Team.
-      responses:
-        '202':
-          description: Job accepted. Use the returned `poll_url` to retrieve the result.
-          headers:
-            Retry-After:
-              description: Suggested number of seconds to wait before polling.
-              schema:
-                type: integer
-              example: 5
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QualityEvaluationJobCreated'
-              example:
-                job_id: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
-                poll_url: /v1/quality-evaluation/f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
-        '400':
-          description: |-
-            Request validation failed. Common causes:
-            - `metadata.source_language`, `metadata.target_language`, or `segments` is missing or empty.
-            - `segments` contains more than 500 entries.
-            - A segment's `source` or `target` exceeds 10,000 characters.
-            - The `source_language` / `target_language` combination is not supported.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QualityEvaluationApiError'
-              example:
-                message: segments[0].source is required.
-        '403':
-          description: |-
-            Authorization failed. Common causes:
-            - The API key does not have access to the Quality Evaluation feature.
-            - A free-tier key is used against the paid endpoint, or vice versa.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QualityEvaluationApiError'
-              example:
-                message: Forbidden
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-      security:
-        - auth_header: [ ]
-  /v1/quality-evaluation/{job_id}:
+  /v1/quality-evaluations/{job_id}:
     get:
       tags:
         - QualityEvaluation
       summary: Poll for the evaluation result
       operationId: pollQualityEvaluation
       description: |-
-        Returns the current state of an evaluation job. While the job is in progress the response contains only status information. Once complete the response includes the full evaluation report.
+        Returns the current state of a quality evaluation. While the evaluation is in progress the response carries only status information; once it completes, the response carries the full report.
+
+        Evaluations are requested with `enable_quality_evaluation` on [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document). There is no public endpoint for starting one.
       parameters:
         - name: job_id
           in: path
           required: true
-          description: The job identifier returned by `POST /v1/quality-evaluation`. Must be a valid UUID.
+          description: The unique ID of the quality evaluation, returned as `quality_evaluation_job_id` when the document was [uploaded for translation](/api-reference/document/upload-and-translate-a-document).
           schema:
             type: string
-            format: uuid
-            example: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
+            example: 04DE5AD98A02647D83285A36021911C6
       responses:
         '200':
           description: |-
-            Polling result. The response shape depends on the `status` field. `done` returns the full evaluation report; `error` returns error details.
+            Polling result. The response shape depends on the `status` field. `done` carries the full report; `error` carries error details.
           content:
             application/json:
               schema:
@@ -4701,10 +4656,19 @@ paths:
                   - $ref: '#/components/schemas/QualityEvaluationDone'
                   - $ref: '#/components/schemas/QualityEvaluationFailed'
               example:
-                job_id: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
+                job_id: 04DE5AD98A02647D83285A36021911C6
                 status: done
                 segments:
                   - segment_index: 0
+                    segment_score: 38.5
+                    source: Our Q3 revenue came in 5% above forecast.
+                    target: Unser Q3-Umsatz lag 5 % unter der Prognose.
+                    applied_glossary_term_pairs:
+                      - source_term: forecast
+                        target_term: Prognose
+                        ranges:
+                          - start: 34
+                            end: 42
                     errors:
                       - type: Accuracy
                         sub_type: Mistranslation
@@ -4717,6 +4681,9 @@ paths:
                           - start: 20
                             end: 29
                   - segment_index: 1
+                    segment_score: 62
+                    source: Please share these results with your teams by Friday.
+                    target: Bitte teilen Sie diese Ergebnisse mit Ihrem Team.
                     errors:
                       - type: Accuracy
                         sub_type: Omission
@@ -4736,17 +4703,8 @@ paths:
                         target_spans:
                           - start: 38
                             end: 48
-                summary:
-                  overall_score: 72
-                  granular_counts:
-                    Accuracy:
-                      Mistranslation:
-                        Critical: 1
-                        Minor: 1
-                      Omission:
-                        Major: 1
         '202':
-          description: Job is still processing. Continue polling after the time suggested by the `Retry-After` header.
+          description: The evaluation is still running. Continue polling after the time suggested by the `Retry-After` header.
           headers:
             Retry-After:
               description: Suggested number of seconds to wait before polling again.
@@ -4758,10 +4716,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/QualityEvaluationProcessing'
               example:
-                job_id: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
+                job_id: 04DE5AD98A02647D83285A36021911C6
                 status: processing
         '400':
-          description: Invalid `job_id` format. The `job_id` must be a valid UUID.
+          description: The `job_id` is not a well-formed identifier.
           content:
             application/json:
               schema:
@@ -4770,7 +4728,7 @@ paths:
                 message: job_id must be a valid UUID.
         '404':
           description: |-
-            Job not found. The `job_id` is well-formed but no job exists with that ID, or it has expired. Jobs are retained for 24 hours after reaching `done` or `error` state.
+            No evaluation exists for this `job_id`, it belongs to another account, or it has expired. See [Report retention](/api-reference/quality-evaluations/poll#report-retention).
           content:
             application/json:
               schema:
@@ -8271,63 +8229,6 @@ components:
           description: Per-target processing results, in the same order as the `targets` array.
           items:
             $ref: '#/components/schemas/VoiceTranslateJobTargetResult'
-    QualityEvaluationRequest:
-      type: object
-      required:
-        - metadata
-        - segments
-      properties:
-        metadata:
-          type: object
-          required:
-            - source_language
-            - target_language
-          description: Job-level metadata.
-          properties:
-            source_language:
-              type: string
-              description: Language code of the source text. See [Supported language pairs](/api-reference/quality-evaluation/submit#supported-language-pairs).
-              example: en
-            target_language:
-              type: string
-              description: Language code of the translated text. See [Supported language pairs](/api-reference/quality-evaluation/submit#supported-language-pairs).
-              example: de
-        segments:
-          type: array
-          minItems: 1
-          maxItems: 500
-          description: The segment pairs to evaluate. Up to 500 segments per request.
-          items:
-            type: object
-            required:
-              - source
-              - target
-            properties:
-              source:
-                type: string
-                maxLength: 10000
-                description: The original text in the source language.
-                example: Our Q3 revenue came in 5% above forecast.
-              target:
-                type: string
-                maxLength: 10000
-                description: The translated text in the target language.
-                example: Unser Q3-Umsatz lag 5 % unter der Prognose.
-    QualityEvaluationJobCreated:
-      type: object
-      required:
-        - job_id
-        - poll_url
-      properties:
-        job_id:
-          type: string
-          format: uuid
-          description: The job identifier. Use it with `GET /v1/quality-evaluation/{job_id}` to poll for the result.
-          example: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
-        poll_url:
-          type: string
-          description: Relative URL you can use to poll for the result.
-          example: /v1/quality-evaluation/f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
     QualityEvaluationProcessing:
       type: object
       required:
@@ -8336,8 +8237,7 @@ components:
       properties:
         job_id:
           type: string
-          format: uuid
-          example: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
+          example: 04DE5AD98A02647D83285A36021911C6
         status:
           type: string
           enum:
@@ -8350,12 +8250,10 @@ components:
         - job_id
         - status
         - segments
-        - summary
       properties:
         job_id:
           type: string
-          format: uuid
-          example: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
+          example: 04DE5AD98A02647D83285A36021911C6
         status:
           type: string
           enum:
@@ -8363,33 +8261,9 @@ components:
           example: done
         segments:
           type: array
-          description: One entry per submitted segment, in request order.
+          description: One entry per evaluated segment of the document, in reading order.
           items:
             $ref: '#/components/schemas/QualityEvaluationSegment'
-        summary:
-          type: object
-          required:
-            - overall_score
-            - granular_counts
-          description: Aggregate quality results across all segments.
-          properties:
-            overall_score:
-              type: integer
-              minimum: 0
-              maximum: 100
-              description: Overall translation quality, from 0 (lowest) to 100 (highest). See [Summary](/api-reference/quality-evaluation/poll#summary).
-              example: 72
-            granular_counts:
-              type: object
-              description: Nested counts keyed by `type`, then `sub_type`, then `severity`. Leaf values are integer counts.
-              additionalProperties: true
-              example:
-                Accuracy:
-                  Mistranslation:
-                    Critical: 1
-                    Minor: 1
-                  Omission:
-                    Major: 1
     QualityEvaluationFailed:
       title: Error
       type: object
@@ -8400,8 +8274,7 @@ components:
       properties:
         job_id:
           type: string
-          format: uuid
-          example: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
+          example: 04DE5AD98A02647D83285A36021911C6
         status:
           type: string
           enum:
@@ -8425,17 +8298,59 @@ components:
       type: object
       required:
         - segment_index
+        - segment_score
         - errors
       properties:
         segment_index:
           type: integer
-          description: Zero-based index matching the position of this segment in the request.
+          description: Zero-based index of this segment within the document, in reading order.
           example: 0
+        segment_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Quality score for this segment, where 0 is lowest and 100 is highest.
+          example: 38.5
+        source:
+          type: string
+          description: The segment's source text as the evaluation read it. `source_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluations/poll#segment-text).
+          example: Our Q3 revenue came in 5% above forecast.
+        target:
+          type: string
+          description: The segment's translated text as the evaluation read it. `target_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluations/poll#segment-text).
+          example: Unser Q3-Umsatz lag 5 % unter der Prognose.
+        applied_glossary_term_pairs:
+          type: array
+          description: Glossary term pairs applied to this segment when the document was translated, so you can tell which customizations were in play where an issue was reported. Omitted when no term pair was applied.
+          items:
+            $ref: '#/components/schemas/QualityEvaluationAppliedGlossaryTermPair'
         errors:
           type: array
           description: Quality issues identified in this segment. Empty if no issues were found.
           items:
             $ref: '#/components/schemas/QualityEvaluationIssue'
+    QualityEvaluationAppliedGlossaryTermPair:
+      type: object
+      description: A glossary term pair that was applied to the segment's translation.
+      required:
+        - source_term
+        - target_term
+        - ranges
+      properties:
+        source_term:
+          type: string
+          description: The source term, as defined in the glossary.
+          example: forecast
+        target_term:
+          type: string
+          description: The target term, as applied to the translation.
+          example: Prognose
+        ranges:
+          type: array
+          description: Spans in `target` where the target term was applied, using the same convention as `source_spans` and `target_spans`. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).
+          items:
+            $ref: '#/components/schemas/QualityEvaluationSpan'
     QualityEvaluationIssue:
       type: object
       required:
@@ -8448,16 +8363,17 @@ components:
       properties:
         type:
           type: string
-          description: Top-level category of the issue. See [Type and sub-type values](/api-reference/quality-evaluation/poll#type-and-sub-type-values).
+          description: Top-level category of the issue. See [Type and sub-type values](/api-reference/quality-evaluations/poll#type-and-sub-type-values).
           enum:
             - Accuracy
             - Fluency
             - Style
             - Miscellaneous
+            - InternalTQEError
           example: Accuracy
         sub_type:
           type: string
-          description: Finer-grained category within `type`. See [Type and sub-type values](/api-reference/quality-evaluation/poll#type-and-sub-type-values).
+          description: Finer-grained category within `type`. See [Type and sub-type values](/api-reference/quality-evaluations/poll#type-and-sub-type-values).
           enum:
             - Addition
             - Omission
@@ -8473,10 +8389,11 @@ components:
             - Character encoding
             - Awkward
             - Inconsistent style
+            - SegmentTooLarge
           example: Mistranslation
         severity:
           type: string
-          description: How serious the issue is. See [Severity values](/api-reference/quality-evaluation/poll#severity-values).
+          description: How serious the issue is. See [Severity values](/api-reference/quality-evaluations/poll#severity-values).
           enum:
             - Critical
             - Major
@@ -8488,12 +8405,12 @@ components:
           example: "The source says revenue was '5% above forecast' but the translation says '5 % unter der Prognose' (5% below forecast). This completely reverses the meaning and has financial implications."
         source_spans:
           type: array
-          description: Spans on the segment's source text where this issue applies. Empty if no source-side highlight. See [About span ranges](/api-reference/quality-evaluation/poll#about-span-ranges).
+          description: Spans on the segment's source text where this issue applies. Empty if no source-side highlight. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).
           items:
             $ref: '#/components/schemas/QualityEvaluationSpan'
         target_spans:
           type: array
-          description: Spans on the segment's target text where this issue applies. Empty if no target-side highlight. See [About span ranges](/api-reference/quality-evaluation/poll#about-span-ranges).
+          description: Spans on the segment's target text where this issue applies. Empty if no target-side highlight. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).
           items:
             $ref: '#/components/schemas/QualityEvaluationSpan'
     QualityEvaluationSpan:
@@ -8501,7 +8418,7 @@ components:
       required:
         - start
         - end
-      description: A half-open `[start, end)` range of Unicode code points within a segment's source or target text. See [About span ranges](/api-reference/quality-evaluation/poll#about-span-ranges).
+      description: A half-open `[start, end)` range of Unicode code points within a segment's source or target text. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).
       properties:
         start:
           type: integer
