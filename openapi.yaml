@@ -30,16 +30,26 @@ tags:
       * `docx` - Microsoft Word Document
       * `pptx` - Microsoft PowerPoint Document
       * `xlsx` - Microsoft Excel Document
+      * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)
       * `pdf` - Portable Document Format
       * `htm / html` - HTML Document
       * `txt` - Plain Text Document
       * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)
       * `srt` - SRT Document
+      * `vtt` - WebVTT Subtitle Document (currently in beta)
       * `idml` - Adobe InDesign Markup Language
       * `xml` - XML Document
       * `json` - JSON Document
+      * `yaml / yml` - YAML Document (currently in beta)
+      * `properties` - Java Properties Document (currently in beta)
+      * `strings` - iOS/macOS Strings Document (currently in beta)
+      * `md / markdown` - Markdown Document (currently in beta)
       * `dita` - DITA topic (Darwin Information Typing Architecture)
       * `mif` - Adobe FrameMaker Interchange Format
+      * `zip` - SCORM Package (e-learning content, currently in beta)
+      * `odt` - OpenDocument Text Document (currently in beta)
+      * `rtf` - Rich Text Format Document (currently in beta)
+      * `resx` - .NET Resource Document (currently in beta)
       * `jpeg` / `jpg` / `png` - Image (currently in beta)
 - name: RephraseText
   description: |-
@@ -884,6 +894,12 @@ paths:
                   target_lang: DE
                   file: '@document.pdf'
                   enable_watermark: true
+              SuppressImages:
+                summary: Suppressing translation of embedded images (pptx only)
+                value:
+                  target_lang: DE
+                  file: '@document.pptx'
+                  input_conversion_options: 'version:1,suppress-image-types:all'
               Glossary:
                 summary: Using a Glossary
                 value:
@@ -938,16 +954,26 @@ paths:
                       * `docx` - Microsoft Word Document
                       * `pptx` - Microsoft PowerPoint Document
                       * `xlsx` - Microsoft Excel Document
+                      * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)
                       * `pdf` - Portable Document Format
                       * `htm / html` - HTML Document
                       * `txt` - Plain Text Document
                       * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)
                       * `srt` - SRT Document
+                      * `vtt` - WebVTT Subtitle Document (currently in beta)
                       * `idml` - Adobe InDesign Markup Language
                       * `xml` - XML Document
                       * `json` - JSON Document
+                      * `yaml / yml` - YAML Document (currently in beta)
+                      * `properties` - Java Properties Document (currently in beta)
+                      * `strings` - iOS/macOS Strings Document (currently in beta)
+                      * `md / markdown` - Markdown Document (currently in beta)
                       * `dita` - DITA topic (Darwin Information Typing Architecture)
                       * `mif` - Adobe FrameMaker Interchange Format
+                      * `zip` - SCORM Package (e-learning content, currently in beta)
+                      * `odt` - OpenDocument Text Document (currently in beta)
+                      * `rtf` - Rich Text Format Document (currently in beta)
+                      * `resx` - .NET Resource Document (currently in beta)
                       * `jpeg` / `jpg` / `png` - Image (currently in beta)
                 filename:
                   type: string
@@ -957,6 +983,17 @@ paths:
                   type: string
                   description: |
                     File extension of desired format of translated file, for example: `docx`. If unspecified, by default the translated file will be in the same format as the input file.
+                input_conversion_options:
+                  description: |-
+                    Comma-separated list of `key:value` conversion options, prefixed with a version, that control how the input document is converted before translation. For example: `version:1,suppress-image-types:all`.
+
+                    Supported keys:
+
+                      * `suppress-image-types` - Leaves the specified types of images embedded in the document untranslated. The value is a hyphen-separated list of image content types (for example `logo-photo` suppresses logos and photos), or `all` to suppress every embedded image. Recognized image content types: `logo`, `icon`, `decorative`, `barcode`, `formula`, `signature`, `handwriting`, `stamp`, `screenshot`, `diagram`, `chart`, `photo`, `illustration`, `comic`, `music`, `infographic`, `table`, `text`, `other`, `unknown`.
+
+                    Only `pptx` documents support conversion options; for other file types this parameter is ignored. Unrecognized keys are ignored.
+                  type: string
+                  example: version:1,suppress-image-types:all
                 formality:
                   $ref: '#/components/schemas/Formality'
                 glossary_id:

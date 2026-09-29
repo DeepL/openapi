@@ -35,7 +35,7 @@
     },
     {
       "name": "TranslateDocuments",
-      "description": "The document translation API allows you to translate whole documents and supports the following file types and extensions:\n  * `docx` - Microsoft Word Document\n  * `pptx` - Microsoft PowerPoint Document\n  * `xlsx` - Microsoft Excel Document\n  * `pdf` - Portable Document Format\n  * `htm / html` - HTML Document\n  * `txt` - Plain Text Document\n  * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)\n  * `srt` - SRT Document\n  * `idml` - Adobe InDesign Markup Language\n  * `xml` - XML Document\n  * `json` - JSON Document\n  * `dita` - DITA topic (Darwin Information Typing Architecture)\n  * `mif` - Adobe FrameMaker Interchange Format\n  * `jpeg` / `jpg` / `png` - Image (currently in beta)"
+      "description": "The document translation API allows you to translate whole documents and supports the following file types and extensions:\n  * `docx` - Microsoft Word Document\n  * `pptx` - Microsoft PowerPoint Document\n  * `xlsx` - Microsoft Excel Document\n  * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)\n  * `pdf` - Portable Document Format\n  * `htm / html` - HTML Document\n  * `txt` - Plain Text Document\n  * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)\n  * `srt` - SRT Document\n  * `vtt` - WebVTT Subtitle Document (currently in beta)\n  * `idml` - Adobe InDesign Markup Language\n  * `xml` - XML Document\n  * `json` - JSON Document\n  * `yaml / yml` - YAML Document (currently in beta)\n  * `properties` - Java Properties Document (currently in beta)\n  * `strings` - iOS/macOS Strings Document (currently in beta)\n  * `md / markdown` - Markdown Document (currently in beta)\n  * `dita` - DITA topic (Darwin Information Typing Architecture)\n  * `mif` - Adobe FrameMaker Interchange Format\n  * `zip` - SCORM Package (e-learning content, currently in beta)\n  * `odt` - OpenDocument Text Document (currently in beta)\n  * `rtf` - Rich Text Format Document (currently in beta)\n  * `resx` - .NET Resource Document (currently in beta)\n  * `jpeg` / `jpg` / `png` - Image (currently in beta)"
     },
     {
       "name": "RephraseText",
@@ -1109,6 +1109,14 @@
                     "enable_watermark": true
                   }
                 },
+                "SuppressImages": {
+                  "summary": "Suppressing translation of embedded images (pptx only)",
+                  "value": {
+                    "target_lang": "DE",
+                    "file": "@document.pptx",
+                    "input_conversion_options": "version:1,suppress-image-types:all"
+                  }
+                },
                 "Glossary": {
                   "summary": "Using a Glossary",
                   "value": {
@@ -1172,7 +1180,7 @@
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "The document file to be translated. The file name should be included in this part's content disposition. As an alternative, the filename parameter can be used. The following file types and extensions are supported:\n  * `docx` - Microsoft Word Document\n  * `pptx` - Microsoft PowerPoint Document\n  * `xlsx` - Microsoft Excel Document\n  * `pdf` - Portable Document Format\n  * `htm / html` - HTML Document\n  * `txt` - Plain Text Document\n  * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)\n  * `srt` - SRT Document\n  * `idml` - Adobe InDesign Markup Language\n  * `xml` - XML Document\n  * `json` - JSON Document\n  * `dita` - DITA topic (Darwin Information Typing Architecture)\n  * `mif` - Adobe FrameMaker Interchange Format\n  * `jpeg` / `jpg` / `png` - Image (currently in beta)"
+                    "description": "The document file to be translated. The file name should be included in this part's content disposition. As an alternative, the filename parameter can be used. The following file types and extensions are supported:\n  * `docx` - Microsoft Word Document\n  * `pptx` - Microsoft PowerPoint Document\n  * `xlsx` - Microsoft Excel Document\n  * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)\n  * `pdf` - Portable Document Format\n  * `htm / html` - HTML Document\n  * `txt` - Plain Text Document\n  * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)\n  * `srt` - SRT Document\n  * `vtt` - WebVTT Subtitle Document (currently in beta)\n  * `idml` - Adobe InDesign Markup Language\n  * `xml` - XML Document\n  * `json` - JSON Document\n  * `yaml / yml` - YAML Document (currently in beta)\n  * `properties` - Java Properties Document (currently in beta)\n  * `strings` - iOS/macOS Strings Document (currently in beta)\n  * `md / markdown` - Markdown Document (currently in beta)\n  * `dita` - DITA topic (Darwin Information Typing Architecture)\n  * `mif` - Adobe FrameMaker Interchange Format\n  * `zip` - SCORM Package (e-learning content, currently in beta)\n  * `odt` - OpenDocument Text Document (currently in beta)\n  * `rtf` - Rich Text Format Document (currently in beta)\n  * `resx` - .NET Resource Document (currently in beta)\n  * `jpeg` / `jpg` / `png` - Image (currently in beta)"
                   },
                   "filename": {
                     "type": "string",
@@ -1181,6 +1189,11 @@
                   "output_format": {
                     "type": "string",
                     "description": "File extension of desired format of translated file, for example: `docx`. If unspecified, by default the translated file will be in the same format as the input file.\n"
+                  },
+                  "input_conversion_options": {
+                    "description": "Comma-separated list of `key:value` conversion options, prefixed with a version, that control how the input document is converted before translation. For example: `version:1,suppress-image-types:all`.\n\nSupported keys:\n\n  * `suppress-image-types` - Leaves the specified types of images embedded in the document untranslated. The value is a hyphen-separated list of image content types (for example `logo-photo` suppresses logos and photos), or `all` to suppress every embedded image. Recognized image content types: `logo`, `icon`, `decorative`, `barcode`, `formula`, `signature`, `handwriting`, `stamp`, `screenshot`, `diagram`, `chart`, `photo`, `illustration`, `comic`, `music`, `infographic`, `table`, `text`, `other`, `unknown`.\n\nOnly `pptx` documents support conversion options; for other file types this parameter is ignored. Unrecognized keys are ignored.",
+                    "type": "string",
+                    "example": "version:1,suppress-image-types:all"
                   },
                   "formality": {
                     "$ref": "#/components/schemas/Formality"
