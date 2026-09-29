@@ -647,7 +647,10 @@ paths:
                   description: |-
                     Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.
 
-                    **Important:**  The target language has to match the language of the style rule list.
+                    **Important:** The target language has to match the language of the style rule list. A list
+                    created for a root language (for example `en`) applies to that language and all of its variants
+                    (`EN-GB`, `EN-US`). A list created for a variant (for example `en-GB`) applies only when
+                    `target_lang` is that variant.
 
                     All `model_type` values are supported.
                   type: string
@@ -979,7 +982,10 @@ paths:
                   description: |-
                     Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.
 
-                    **Important:** The target language has to match the language of the style rule list.
+                    **Important:** The target language has to match the language of the style rule list. A list
+                    created for a root language (for example `en`) applies to that language and all of its variants
+                    (`EN-GB`, `EN-US`). A list created for a variant (for example `en-GB`) applies only when
+                    `target_lang` is that variant.
                   type: string
                   example: 7ff9bfd6-cd85-4190-8503-d6215a321519
                 translation_memory_id:
@@ -3797,7 +3803,8 @@ paths:
       operationId: createStyleRuleList
       description: |-
         Create a style rule list for a single language, optionally with its configured rules
-        and custom instructions. Use the returned `style_id` with the translation endpoints
+        and custom instructions. The `language` can be a root code such as `de` or a variant
+        code such as `de-CH`. Use the returned `style_id` with the translation endpoints
         to apply the list.
       requestBody:
         required: true
@@ -6389,17 +6396,64 @@ components:
       description: A unique ID assigned to a style rule list.
       example: "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
     StyleRuleLanguage:
-      description: The language that the style rule list is applied to.
+      description: |-
+        The target language the style rule list applies to. Codes are matched case-insensitively;
+        the response returns the canonical form (for example `de-CH`).
+
+        A root code (for example `en`) applies to that language and all of its variants. A variant
+        code (for example `en-GB`) applies only when `target_lang` is that variant.
+
+        Variant lists for `de-CH`, `fr-CA`, `pt-BR`, and `pt-PT` are generally available. Variant
+        lists for `de-DE`, `en-GB`, `en-US`, `es-419`, `es-ES`, `fr-FR`, `zh-Hans`, and `zh-Hant`
+        are in beta. The current list and the status of each language are returned by
+        [`GET /v3/languages?resource=style_rules&include=beta`](/docs/languages/using-the-languages-api).
       type: string
       enum:
+      - ar
+      - bg
+      - cs
+      - da
       - de
+      - de-CH
+      - de-DE
+      - el
       - en
+      - en-GB
+      - en-US
       - es
+      - es-419
+      - es-ES
+      - et
+      - fi
       - fr
+      - fr-CA
+      - fr-FR
+      - he
+      - hu
+      - id
       - it
       - ja
       - ko
+      - lt
+      - lv
+      - nb
+      - nl
+      - pl
+      - pt
+      - pt-BR
+      - pt-PT
+      - ro
+      - ru
+      - sk
+      - sl
+      - sv
+      - th
+      - tr
+      - uk
+      - vi
       - zh
+      - zh-Hans
+      - zh-Hant
     StyleRuleName:
       description: Name associated with the style rule list.
       type: string

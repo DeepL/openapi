@@ -820,7 +820,7 @@
                     }
                   },
                   "style_id": {
-                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:**  The target language has to match the language of the style rule list.\n\nAll `model_type` values are supported.",
+                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:** The target language has to match the language of the style rule list. A list\ncreated for a root language (for example `en`) applies to that language and all of its variants\n(`EN-GB`, `EN-US`). A list created for a variant (for example `en-GB`) applies only when\n`target_lang` is that variant.\n\nAll `model_type` values are supported.",
                     "type": "string",
                     "example": "7ff9bfd6-cd85-4190-8503-d6215a321519"
                   },
@@ -1200,7 +1200,7 @@
                     }
                   },
                   "style_id": {
-                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:** The target language has to match the language of the style rule list.",
+                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:** The target language has to match the language of the style rule list. A list\ncreated for a root language (for example `en`) applies to that language and all of its variants\n(`EN-GB`, `EN-US`). A list created for a variant (for example `en-GB`) applies only when\n`target_lang` is that variant.",
                     "type": "string",
                     "example": "7ff9bfd6-cd85-4190-8503-d6215a321519"
                   },
@@ -5285,7 +5285,7 @@
       "post": {
         "summary": "Create a style rule list",
         "operationId": "createStyleRuleList",
-        "description": "Create a style rule list for a single language, optionally with its configured rules\nand custom instructions. Use the returned `style_id` with the translation endpoints\nto apply the list.",
+        "description": "Create a style rule list for a single language, optionally with its configured rules\nand custom instructions. The `language` can be a root code such as `de` or a variant\ncode such as `de-CH`. Use the returned `style_id` with the translation endpoints\nto apply the list.",
         "requestBody": {
           "required": true,
           "content": {
@@ -8842,17 +8842,54 @@
         "example": "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
       },
       "StyleRuleLanguage": {
-        "description": "The language that the style rule list is applied to.",
+        "description": "The target language the style rule list applies to. Codes are matched case-insensitively;\nthe response returns the canonical form (for example `de-CH`).\n\nA root code (for example `en`) applies to that language and all of its variants. A variant\ncode (for example `en-GB`) applies only when `target_lang` is that variant.\n\nVariant lists for `de-CH`, `fr-CA`, `pt-BR`, and `pt-PT` are generally available. Variant\nlists for `de-DE`, `en-GB`, `en-US`, `es-419`, `es-ES`, `fr-FR`, `zh-Hans`, and `zh-Hant`\nare in beta. The current list and the status of each language are returned by\n[`GET /v3/languages?resource=style_rules&include=beta`](/docs/languages/using-the-languages-api).",
         "type": "string",
         "enum": [
+          "ar",
+          "bg",
+          "cs",
+          "da",
           "de",
+          "de-CH",
+          "de-DE",
+          "el",
           "en",
+          "en-GB",
+          "en-US",
           "es",
+          "es-419",
+          "es-ES",
+          "et",
+          "fi",
           "fr",
+          "fr-CA",
+          "fr-FR",
+          "he",
+          "hu",
+          "id",
           "it",
           "ja",
           "ko",
-          "zh"
+          "lt",
+          "lv",
+          "nb",
+          "nl",
+          "pl",
+          "pt",
+          "pt-BR",
+          "pt-PT",
+          "ro",
+          "ru",
+          "sk",
+          "sl",
+          "sv",
+          "th",
+          "tr",
+          "uk",
+          "vi",
+          "zh",
+          "zh-Hans",
+          "zh-Hant"
         ]
       },
       "StyleRuleName": {
