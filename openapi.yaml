@@ -989,9 +989,10 @@ paths:
 
                     Supported keys:
 
-                      * `suppress-image-types` - Leaves the specified types of images embedded in the document untranslated. The value is a hyphen-separated list of image content types (for example `logo-photo` suppresses logos and photos), or `all` to suppress every embedded image. Recognized image content types: `logo`, `icon`, `decorative`, `barcode`, `formula`, `signature`, `handwriting`, `stamp`, `screenshot`, `diagram`, `chart`, `photo`, `illustration`, `comic`, `music`, `infographic`, `table`, `text`, `other`, `unknown`.
+                      * `suppress-image-types` - Leaves the specified types of images embedded in the document untranslated. The value is a hyphen-separated list of image content types (for example `logo-photo` suppresses logos and photos), or `all` to suppress every embedded image. Recognized image content types: `logo`, `icon`, `decorative`, `barcode`, `formula`, `signature`, `handwriting`, `stamp`, `screenshot`, `diagram`, `chart`, `photo`, `illustration`, `comic`, `music`, `infographic`, `table`, `text`, `other`, `unknown`. Only `pptx` documents support this key.
+                      * `json-placeholders` - Controls how brace-delimited placeholders in `json` string values are handled. `protect` (the default) keeps identifier-shaped placeholders such as `{stars}` or `{{userName}}` verbatim so they are not translated; `translate` translates them along with the surrounding text. ICU MessageFormat skeletons such as `{count, plural, one {# item} other {# items}}` are always protected, with only the branch text translated, in both modes. Multi-word groups such as `{see note}` are treated as translatable text in both modes.
 
-                    Only `pptx` documents support conversion options; for other file types this parameter is ignored. Unrecognized keys are ignored.
+                    For other file types this parameter is ignored. Unrecognized keys are ignored.
                   type: string
                   example: version:1,suppress-image-types:all
                 formality:
