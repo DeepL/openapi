@@ -9,7 +9,7 @@ info:
   contact:
     name: DeepL - Contact us
     url: https://www.deepl.com/contact-us
-  version: 3.13.0
+  version: 3.14.0
 externalDocs:
   description: DeepL Pro - Plans and pricing
   url: https://www.deepl.com/pro#developer
@@ -557,8 +557,9 @@ paths:
       summary: Set developer key usage limits as an admin
       operationId: adminSetDeveloperKeyUsageLimits
       description: |-
-        Set per-key usage limits for characters and speech-to-text milliseconds. Requests made
-        with the key fail with HTTP 456 once a limit is reached. Requires an Admin API key.
+        Set per-key usage limits for characters, speech-to-text milliseconds, and
+        speech-to-speech milliseconds. Requests made with the key fail with HTTP 456
+        once a limit is reached. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -574,6 +575,8 @@ paths:
                   $ref: '#/components/schemas/ApiKeyUsageCharacters'
                 speech_to_text_milliseconds:
                   $ref: '#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds'
+                speech_to_speech_milliseconds:
+                  $ref: '#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds'
       responses:
         '200':
           description: The set usage limits function returns a JSON representation of the modified API key.
@@ -5672,6 +5675,13 @@ components:
         Setting the limit to `null` disables the limit, effectively allowing unlimited usage.
       type: number
       example: 3600000
+    ApiKeyUsageSpeechToSpeechMilliseconds:
+      description: |
+        Restricts the number of milliseconds of speech-to-speech that can be consumed by an API key in a one-month usage period.
+        Setting the limit to `0` means the API key will not be able to consume speech-to-speech milliseconds.
+        Setting the limit to `null` disables the limit, effectively allowing unlimited usage.
+      type: number
+      example: 3600000
     ApiKey:
       description: The API key.
       type: object
@@ -5700,6 +5710,8 @@ components:
               $ref: '#/components/schemas/ApiKeyUsageCharacters'
             speech_to_text_milliseconds:
               $ref: '#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds'
+            speech_to_speech_milliseconds:
+              $ref: '#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds'
     ConfiguredRules:
       description: The enabled rules for the style rule list including what option
         was selected for each rule. This schema combines rules from all supported

@@ -8,7 +8,7 @@
       "name": "DeepL - Contact us",
       "url": "https://www.deepl.com/contact-us"
     },
-    "version": "3.13.0"
+    "version": "3.14.0"
   },
   "externalDocs": {
     "description": "DeepL Pro - Plans and pricing",
@@ -688,7 +688,7 @@
         ],
         "summary": "Set developer key usage limits as an admin",
         "operationId": "adminSetDeveloperKeyUsageLimits",
-        "description": "Set per-key usage limits for characters and speech-to-text milliseconds. Requests made\nwith the key fail with HTTP 456 once a limit is reached. Requires an Admin API key.",
+        "description": "Set per-key usage limits for characters, speech-to-text milliseconds, and\nspeech-to-speech milliseconds. Requests made with the key fail with HTTP 456\nonce a limit is reached. Requires an Admin API key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -707,6 +707,9 @@
                   },
                   "speech_to_text_milliseconds": {
                     "$ref": "#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds"
+                  },
+                  "speech_to_speech_milliseconds": {
+                    "$ref": "#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds"
                   }
                 }
               }
@@ -7850,6 +7853,11 @@
         "type": "number",
         "example": 3600000
       },
+      "ApiKeyUsageSpeechToSpeechMilliseconds": {
+        "description": "Restricts the number of milliseconds of speech-to-speech that can be consumed by an API key in a one-month usage period.\nSetting the limit to `0` means the API key will not be able to consume speech-to-speech milliseconds.\nSetting the limit to `null` disables the limit, effectively allowing unlimited usage.\n",
+        "type": "number",
+        "example": 3600000
+      },
       "ApiKey": {
         "description": "The API key.",
         "type": "object",
@@ -7884,6 +7892,9 @@
               },
               "speech_to_text_milliseconds": {
                 "$ref": "#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds"
+              },
+              "speech_to_speech_milliseconds": {
+                "$ref": "#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds"
               }
             }
           }
