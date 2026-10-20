@@ -58,6 +58,10 @@
       "description": "Please note that this is the spec for the (old) v2 glossary endpoint.\nWe recommend users switch to the newer v3 glossary endpoints, which support editability and multilinguality.\n\nThe *glossary* functions allow you to create, inspect, and delete glossaries.\nGlossaries created with the glossary function can be used in translate requests by specifying the\n`glossary_id` parameter.\nIf you encounter issues, please let us know at support@DeepL.com.\n\nCurrently you can create glossaries with any of the languages DeepL supports (with the exception of Thai)."
     },
     {
+      "name": "ManageStyleProfiles",
+      "description": "The style profile endpoints allow you to create, inspect, edit and delete style profiles. A style\nprofile bundles glossaries, style rule lists and translation memories under one ID. Pass its\n`style_profile_id` in a translation request instead of the individual customization parameters.\n\nEvery component list is optional, and you can link components later with an update. A style\nprofile can reference at most one style rule list per target language and at most one translation\nmemory per source language. With `glossary_priority_order_enabled`, the order of the glossary IDs\ndecides which glossary wins when two of them define the same source term.\n\nDeleting a style profile does not delete the glossaries, style rule lists and translation memories it\nlinks. Deleting one of those components removes it from every style profile that links it."
+    },
+    {
       "name": "MetaInformation",
       "description": "Information about API usage and value ranges"
     },
@@ -838,6 +842,12 @@
                       "example": "Use a friendly, diplomatic tone"
                     }
                   },
+                  "style_profile_id": {
+                    "description": "Translate with a [style profile](/api-reference/style-profiles/list-all-style-profiles): its glossaries,\nstyle rule lists and translation memories through one ID. The profile is applied per text once the\nsource language is known: the glossaries with a dictionary for the text's language pair, the style\nrule list for the target language, and the translation memories whose source language matches the\ntext. A component that does not fit a text's language pair is left out for that text; this is not an\nerror.\n\nCannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,\n`translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected\nwith `400 Bad Request`. A style profile that does not exist or that your account cannot access is\nrejected with `404 Not Found`.",
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47"
+                  },
                   "tag_handling": {
                     "$ref": "#/components/schemas/TagHandlingOption"
                   },
@@ -939,6 +949,12 @@
                   },
                   "translation_memory_threshold": {
                     "$ref": "#/components/schemas/TranslationMemoryThreshold"
+                  },
+                  "style_profile_id": {
+                    "description": "Translate with a [style profile](/api-reference/style-profiles/list-all-style-profiles): its glossaries,\nstyle rule lists and translation memories through one ID. The profile is applied per text once the\nsource language is known: the glossaries with a dictionary for the text's language pair, the style\nrule list for the target language, and the translation memories whose source language matches the\ntext. A component that does not fit a text's language pair is left out for that text; this is not an\nerror.\n\nCannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,\n`translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected\nwith `400 Bad Request`. A style profile that does not exist or that your account cannot access is\nrejected with `404 Not Found`.",
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47"
                   },
                   "tag_handling": {
                     "$ref": "#/components/schemas/TagHandlingOption"
@@ -1222,6 +1238,12 @@
                   },
                   "translation_memory_threshold": {
                     "$ref": "#/components/schemas/TranslationMemoryThreshold"
+                  },
+                  "style_profile_id": {
+                    "description": "Translate with a [style profile](/api-reference/style-profiles/list-all-style-profiles): its glossaries,\nstyle rule lists and translation memories through one ID. The profile is applied once the\ndocument's source language is known: the glossaries with a dictionary for the language pair, the\nstyle rule list for the target language, and the translation memories whose source language matches\nthe document. A component that does not fit the language pair is left out; this is not an error.\n\nCannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id` or\n`translation_memory_threshold`. A request that combines them is rejected with `400 Bad Request`.\nA style profile that does not exist or that your account cannot access is not rejected at upload:\nthe document status reports an error with the message `Style profile not found.`.",
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47"
                   },
                   "enable_watermark": {
                     "description": "When `true`, adds a \"Translated by DeepL\" watermark to the translated document.\n\nOnly supported for `docx` and `pdf` output. For all other output formats the parameter is ignored and the document is returned without a watermark.",
@@ -5210,6 +5232,688 @@
         ]
       }
     },
+    "/v3/style_profiles": {
+      "get": {
+        "tags": [
+          "ManageStyleProfiles"
+        ],
+        "summary": "List style profiles",
+        "operationId": "listStyleProfiles",
+        "description": "Retrieve a list of style profiles available to the authenticated account, newest first.\n\nThe list includes style profiles that have been shared with the account.\n\nRequires an API key with the `style_profiles:read` scope.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            },
+            "description": "The index of the first page to return. Use with `page_size` to get the next page of style profiles."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "The maximum number of style profiles to return. Values above 100 are reduced to 100."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a list of style profiles.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "style_profiles": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/StyleProfile"
+                      }
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "description": "The total number of style profiles available to the account.",
+                      "example": 2
+                    }
+                  }
+                },
+                "examples": {
+                  "Basic": {
+                    "value": {
+                      "style_profiles": [
+                        {
+                          "style_profile_id": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47",
+                          "name": "Legal, German",
+                          "description": "Contract wording for the German market.",
+                          "industry": "Legal",
+                          "glossary_ids": [
+                            "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81"
+                          ],
+                          "style_rule_ids": [
+                            "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
+                          ],
+                          "translation_memory_ids": [
+                            "a74d88fb-ed2a-4943-a664-a4512398b994"
+                          ],
+                          "glossary_priority_order_enabled": true,
+                          "creation_time": "2026-04-01T16:34:25.223Z",
+                          "updated_time": "2026-08-06T09:12:44.108Z"
+                        },
+                        {
+                          "style_profile_id": "c58e2a71-90b4-4d6f-a2e3-71d5c8b4f902",
+                          "name": "Marketing, Japanese",
+                          "glossary_ids": [],
+                          "style_rule_ids": [],
+                          "translation_memory_ids": [],
+                          "glossary_priority_order_enabled": false,
+                          "creation_time": "2026-07-14T11:02:09.640Z",
+                          "updated_time": "2026-07-14T11:02:09.640Z"
+                        }
+                      ],
+                      "total_count": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "ManageStyleProfiles"
+        ],
+        "summary": "Create a style profile",
+        "operationId": "createStyleProfile",
+        "description": "Create a style profile. Only `name` is required.\n\nIf any of the component IDs cannot be used, the request fails and no style profile is created.\n\nRequires an API key with the `style_profiles:write` scope.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "description": "Name for the style profile. At most 255 characters. An empty name is rejected with\n`400 Bad Request`.",
+                    "type": "string",
+                    "example": "Legal, German"
+                  },
+                  "description": {
+                    "description": "Free-text description of the style profile. At most 1000 characters. Omit it to create\nthe style profile without a description.",
+                    "type": "string",
+                    "example": "Contract wording for the German market."
+                  },
+                  "industry": {
+                    "description": "The industry the style profile is written for. At most 255 characters. Omit it to create\nthe style profile without an industry.",
+                    "type": "string",
+                    "example": "Legal"
+                  },
+                  "glossary_ids": {
+                    "description": "The IDs of the glossaries to link, highest priority first. The order only takes effect\nwith `glossary_priority_order_enabled`. Defaults to an empty list.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "example": [
+                      "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81"
+                    ]
+                  },
+                  "style_rule_ids": {
+                    "description": "The IDs of the style rule lists to link. At most one style rule list per target\nlanguage. Defaults to an empty list.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "example": [
+                      "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
+                    ]
+                  },
+                  "translation_memory_ids": {
+                    "description": "The IDs of the translation memories to link. At most one translation memory per source\nlanguage. Defaults to an empty list.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "example": [
+                      "a74d88fb-ed2a-4943-a664-a4512398b994"
+                    ]
+                  },
+                  "glossary_priority_order_enabled": {
+                    "description": "Whether the order of `glossary_ids` sets priority: when two linked glossaries define the\nsame source term, the one listed first wins. When `false`, the order has no effect.\nDefaults to `false`.",
+                    "type": "boolean",
+                    "default": false,
+                    "example": true
+                  }
+                }
+              },
+              "examples": {
+                "MetadataOnly": {
+                  "summary": "Metadata only",
+                  "value": {
+                    "name": "Marketing, Japanese"
+                  }
+                },
+                "FullyConfigured": {
+                  "summary": "Fully configured",
+                  "value": {
+                    "name": "Legal, German",
+                    "description": "Contract wording for the German market.",
+                    "industry": "Legal",
+                    "glossary_ids": [
+                      "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81"
+                    ],
+                    "style_rule_ids": [
+                      "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
+                    ],
+                    "translation_memory_ids": [
+                      "a74d88fb-ed2a-4943-a664-a4512398b994"
+                    ],
+                    "glossary_priority_order_enabled": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns the created style profile.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StyleProfile"
+                },
+                "examples": {
+                  "Basic": {
+                    "value": {
+                      "style_profile_id": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47",
+                      "name": "Legal, German",
+                      "description": "Contract wording for the German market.",
+                      "industry": "Legal",
+                      "glossary_ids": [
+                        "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81"
+                      ],
+                      "style_rule_ids": [
+                        "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
+                      ],
+                      "translation_memory_ids": [
+                        "a74d88fb-ed2a-4943-a664-a4512398b994"
+                      ],
+                      "glossary_priority_order_enabled": true,
+                      "creation_time": "2026-04-01T16:34:25.223Z",
+                      "updated_time": "2026-04-01T16:34:25.223Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request was rejected and no style profile was created. This is returned for a malformed\nrequest body, for a missing or empty `name`, for a value that is longer than the field allows,\nand for a component ID that is not a valid UUID or that names a component your account cannot\naccess. The message names the list that contains the bad ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "UnusableComponentId": {
+                    "summary": "Unusable component ID",
+                    "value": {
+                      "message": "Bad request. Reason: One or more glossary ids do not exist or are not accessible. Check 'glossary_ids'."
+                    }
+                  },
+                  "EmptyName": {
+                    "summary": "Empty name",
+                    "value": {
+                      "message": "Bad request. Reason: The Name field is required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Authorization failed. Please supply a valid `DeepL-Auth-Key` via the `Authorization` header.\nThis error is also returned when the API key is scoped but does not include the\n`style_profiles:write` scope, and when your plan does not include creating style profiles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "456": {
+            "description": "You have reached the maximum number of style profiles for your account. Delete a style profile\nbefore creating another one.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Quota exceeded"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
+    "/v3/style_profiles/{style_profile_id}": {
+      "get": {
+        "tags": [
+          "ManageStyleProfiles"
+        ],
+        "summary": "Retrieve a style profile",
+        "operationId": "getStyleProfile",
+        "description": "Retrieve a single style profile by its ID, including the components it links and its timestamps.\n\nRequires an API key with the `style_profiles:read` scope.",
+        "parameters": [
+          {
+            "name": "style_profile_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/StyleProfileId"
+            },
+            "description": "The ID of the style profile to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the style profile.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StyleProfile"
+                },
+                "examples": {
+                  "Basic": {
+                    "value": {
+                      "style_profile_id": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47",
+                      "name": "Legal, German",
+                      "description": "Contract wording for the German market.",
+                      "industry": "Legal",
+                      "glossary_ids": [
+                        "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81"
+                      ],
+                      "style_rule_ids": [
+                        "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
+                      ],
+                      "translation_memory_ids": [
+                        "a74d88fb-ed2a-4943-a664-a4512398b994"
+                      ],
+                      "glossary_priority_order_enabled": true,
+                      "creation_time": "2026-04-01T16:34:25.223Z",
+                      "updated_time": "2026-08-06T09:12:44.108Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "404": {
+            "description": "The style profile could not be found. This is also returned for a style profile your account\ncannot access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "ManageStyleProfiles"
+        ],
+        "summary": "Update a style profile",
+        "operationId": "updateStyleProfile",
+        "description": "Update a style profile you own or that was shared with you for editing. Fields you leave out of the\nrequest body are not changed.\n\nA component list you send replaces the linked list in full. To add a glossary to a style profile\nthat already links two, send all three IDs. To unlink all components in a list, send an empty\nlist.\n\nRequires an API key with the `style_profiles:write` scope.",
+        "parameters": [
+          {
+            "name": "style_profile_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/StyleProfileId"
+            },
+            "description": "The ID of the style profile to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "A new name for the style profile. At most 255 characters. An empty string is rejected\nwith `400 Bad Request`.",
+                    "type": "string",
+                    "example": "Legal, German (2026)"
+                  },
+                  "description": {
+                    "description": "A new description for the style profile. At most 1000 characters. Send an empty string\nto clear it.",
+                    "type": "string",
+                    "example": "Contract wording for the German market, 2026 revision."
+                  },
+                  "industry": {
+                    "description": "A new industry for the style profile. At most 255 characters. Send an empty string to\nclear it.",
+                    "type": "string",
+                    "example": "Legal"
+                  },
+                  "glossary_ids": {
+                    "description": "The IDs of the glossaries to link, highest priority first. The order only takes effect\nwith `glossary_priority_order_enabled`. Replaces the linked glossaries in full. Send an\nempty list to unlink all of them.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "example": [
+                      "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81"
+                    ]
+                  },
+                  "style_rule_ids": {
+                    "description": "The IDs of the style rule lists to link. At most one style rule list per target\nlanguage. Replaces the linked style rule lists in full. Send an empty list to unlink\nall of them.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "example": [
+                      "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
+                    ]
+                  },
+                  "translation_memory_ids": {
+                    "description": "The IDs of the translation memories to link. At most one translation memory per source\nlanguage. Replaces the linked translation memories in full. Send an empty list to\nunlink all of them.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "example": [
+                      "a74d88fb-ed2a-4943-a664-a4512398b994"
+                    ]
+                  },
+                  "glossary_priority_order_enabled": {
+                    "description": "Whether the order of `glossary_ids` sets priority: when two linked glossaries define the\nsame source term, the one listed first wins. When `false`, the order has no effect.",
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              },
+              "examples": {
+                "RenameOnly": {
+                  "summary": "Rename only",
+                  "value": {
+                    "name": "Legal, German (2026)"
+                  }
+                },
+                "ClearTheDescription": {
+                  "summary": "Clear the description",
+                  "value": {
+                    "description": ""
+                  }
+                },
+                "ReplaceTheLinkedGlossaries": {
+                  "summary": "Replace the linked glossaries",
+                  "value": {
+                    "glossary_ids": [
+                      "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81",
+                      "7b2f6d84-3c15-4e90-8a72-d5e1490bc637"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated style profile.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StyleProfile"
+                },
+                "examples": {
+                  "Basic": {
+                    "value": {
+                      "style_profile_id": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47",
+                      "name": "Legal, German (2026)",
+                      "description": "Contract wording for the German market.",
+                      "industry": "Legal",
+                      "glossary_ids": [
+                        "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81",
+                        "7b2f6d84-3c15-4e90-8a72-d5e1490bc637"
+                      ],
+                      "style_rule_ids": [
+                        "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
+                      ],
+                      "translation_memory_ids": [
+                        "a74d88fb-ed2a-4943-a664-a4512398b994"
+                      ],
+                      "glossary_priority_order_enabled": true,
+                      "creation_time": "2026-04-01T16:34:25.223Z",
+                      "updated_time": "2026-08-20T13:47:51.902Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request was rejected and the style profile was not changed. This is returned for a\nmalformed request body, for an empty `name`, for a value that is longer than the field allows,\nand for a component ID that is not a valid UUID or that names a component your account cannot\naccess. The message names the list that contains the bad ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "UnusableComponentId": {
+                    "summary": "Unusable component ID",
+                    "value": {
+                      "message": "Bad request. Reason: One or more translation memory ids do not exist or are not accessible. Check 'translation_memory_ids'."
+                    }
+                  },
+                  "EmptyName": {
+                    "summary": "Empty name",
+                    "value": {
+                      "message": "Bad request. Reason: The field Name must be a string or array type with a minimum length of '1'."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "404": {
+            "description": "The style profile could not be found. This is also returned for a style profile your account\ncan view but not edit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "ManageStyleProfiles"
+        ],
+        "summary": "Delete a style profile",
+        "operationId": "deleteStyleProfile",
+        "description": "Delete a style profile. Only the account that owns a style profile can delete it. A style profile\nthat was shared with your account returns `404 Not Found`.\n\nThe glossaries, style rule lists and translation memories the style profile links are not deleted.\nTranslation requests that pass the deleted `style_profile_id` fail after this call, so update your\nintegration before deleting.\n\nRequires an API key with the `style_profiles:write` scope.",
+        "parameters": [
+          {
+            "name": "style_profile_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/StyleProfileId"
+            },
+            "description": "The ID of the style profile to delete."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The style profile was deleted. The response has no body.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenScoped"
+          },
+          "404": {
+            "description": "The style profile could not be found. This is also returned for a style profile that was\nshared with your account, because only the owner can delete it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
     "/v3/style_rules": {
       "get": {
         "summary": "Retrieve style rule lists",
@@ -8801,6 +9505,95 @@
             "example": "en"
           }
         }
+      },
+      "StyleProfile": {
+        "type": "object",
+        "required": [
+          "style_profile_id",
+          "name",
+          "glossary_ids",
+          "style_rule_ids",
+          "translation_memory_ids",
+          "glossary_priority_order_enabled",
+          "creation_time",
+          "updated_time"
+        ],
+        "properties": {
+          "style_profile_id": {
+            "$ref": "#/components/schemas/StyleProfileId"
+          },
+          "name": {
+            "description": "Name associated with the style profile. At most 255 characters.",
+            "type": "string",
+            "example": "Legal, German"
+          },
+          "description": {
+            "description": "Free-text description of the style profile. At most 1000 characters. Omitted from the response\nwhen the style profile has no description.",
+            "type": "string",
+            "example": "Contract wording for the German market."
+          },
+          "industry": {
+            "description": "The industry the style profile is written for. At most 255 characters. Omitted from the response\nwhen the style profile has no industry.",
+            "type": "string",
+            "example": "Legal"
+          },
+          "glossary_ids": {
+            "description": "The IDs of the glossaries linked to the style profile, highest priority first. The order only\ntakes effect with `glossary_priority_order_enabled`.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": [
+              "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81"
+            ]
+          },
+          "style_rule_ids": {
+            "description": "The IDs of the style rule lists linked to the style profile. A style profile links at most one\nstyle rule list per target language.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": [
+              "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
+            ]
+          },
+          "translation_memory_ids": {
+            "description": "The IDs of the translation memories linked to the style profile. A style profile links at most\none translation memory per source language.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": [
+              "a74d88fb-ed2a-4943-a664-a4512398b994"
+            ]
+          },
+          "glossary_priority_order_enabled": {
+            "description": "Whether the order of `glossary_ids` sets priority: when two linked glossaries define the same\nsource term, the one listed first wins. When `false`, the order has no effect.",
+            "type": "boolean",
+            "example": true
+          },
+          "creation_time": {
+            "description": "The creation time of the style profile in the ISO 8601-1:2019 format (e.g.: `2021-08-03T14:16:18.329Z`).",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-01T16:34:25.223Z"
+          },
+          "updated_time": {
+            "description": "The time of the last update to the style profile in the ISO 8601-1:2019 format (e.g.: `2021-08-03T14:16:18.329Z`).",
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-06T09:12:44.108Z"
+          }
+        }
+      },
+      "StyleProfileId": {
+        "type": "string",
+        "format": "uuid",
+        "description": "A unique ID assigned to a style profile.",
+        "example": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47"
       },
       "StyleRuleList": {
         "type": "object",
