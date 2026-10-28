@@ -83,7 +83,9 @@ tags:
     (e.g. `EN-US`, `EN-GB`, `PT-PT`, `PT-BR`, or `ZH-HANS`).
     Dictionaries with target language `EN` can be used in translations with either English variant.
     Similarly `PT`, and `ZH` dictionaries can be used in translations with their corresponding variants.
-    (When you provide the ID of a glossary to a translation, the appropriate dictionary is automatically applied. Currently glossaries can not yet be used with source language detection.)
+    (When you provide the ID of a glossary to a translation, the appropriate dictionary is automatically applied.)
+
+    For text translation, if you omit `source_lang`, DeepL detects the source language and applies the dictionary for the detected language pair. Document translation with a glossary requires `source_lang`.
 
     Glossaries created via the DeepL API are now unified with glossaries created via the DeepL website and DeepL apps.
     Please only use the v3 glossary API in conjunction with multilingual or edited glossaries from the website.
@@ -650,9 +652,12 @@ paths:
                   $ref: '#/components/schemas/ModelType'
                 glossary_id:
                   description: |-
-                    Specify the glossary to use for the translation. **Important:** This requires the `source_lang`
-                    parameter to be set. The language pair of the glossary has to match the language pair of the
-                    request.
+                    Specify the glossary to use for the translation. The glossary needs a dictionary for the
+                    language pair of the request.
+
+                    If `source_lang` is omitted, DeepL detects the source language and uses the dictionary for
+                    the detected language pair. The request returns a `400` if the glossary has no dictionary
+                    for that pair.
 
                     Cannot be used together with `glossary_ids`.
                   type: string
@@ -661,7 +666,11 @@ paths:
                   description: |-
                     Specify up to 5 glossaries to use for the translation, as an array of glossary IDs. Each glossary's matching terms are applied to the translation.
 
-                    **Important:** This requires the `source_lang` parameter to be set. Every listed glossary must contain a dictionary for the requested language pair.
+                    Every listed glossary must contain a dictionary for the requested language pair.
+
+                    If `source_lang` is omitted, DeepL detects the source language and every listed glossary must
+                    contain a dictionary for the detected language pair. A single glossary without a matching
+                    dictionary returns a `400` for the whole request.
 
                     Cannot be used together with `glossary_id`.
                   type: array
@@ -772,9 +781,12 @@ paths:
                   $ref: '#/components/schemas/ModelType'
                 glossary_id:
                   description: |-
-                    Specify the glossary to use for the translation. **Important:** This requires the `source_lang`
-                    parameter to be set. The language pair of the glossary has to match the language pair of the
-                    request.
+                    Specify the glossary to use for the translation. The glossary needs a dictionary for the
+                    language pair of the request.
+
+                    If `source_lang` is omitted, DeepL detects the source language and uses the dictionary for
+                    the detected language pair. The request returns a `400` if the glossary has no dictionary
+                    for that pair.
 
                     Cannot be used together with `glossary_ids`.
                   type: string
@@ -783,7 +795,11 @@ paths:
                   description: |-
                     Comma-separated list of up to 5 glossary IDs to use for the translation. Each glossary's matching terms are applied to the translation. May also be sent as a repeated parameter.
 
-                    **Important:** This requires the `source_lang` parameter to be set. Every listed glossary must contain a dictionary for the requested language pair.
+                    Every listed glossary must contain a dictionary for the requested language pair.
+
+                    If `source_lang` is omitted, DeepL detects the source language and every listed glossary must
+                    contain a dictionary for the detected language pair. A single glossary without a matching
+                    dictionary returns a `400` for the whole request.
 
                     Cannot be used together with `glossary_id`.
                   type: array
@@ -1047,6 +1063,8 @@ paths:
                   description: |-
                     A unique ID assigned to a glossary. To check glossary support for a language pair, call `GET /v3/languages?resource=translate_document` and verify the `glossary` feature key is present on both the source and target language.
 
+                    Requires the `source_lang` parameter. The request returns a `400` if `source_lang` is omitted.
+
                     Cannot be used together with `glossary_ids`.
                   type: string
                   example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
@@ -1054,7 +1072,9 @@ paths:
                   description: |-
                     Comma-separated list of up to 5 glossary IDs to use for the translation. Each glossary's matching terms are applied to the translated document. May also be sent as a repeated parameter.
 
-                    **Important:** This requires the `source_lang` parameter to be set. Every listed glossary must contain a dictionary for the requested language pair.
+                    Every listed glossary must contain a dictionary for the requested language pair.
+
+                    Requires the `source_lang` parameter. The request returns a `400` if `source_lang` is omitted.
 
                     Cannot be used together with `glossary_id`.
                   type: array
