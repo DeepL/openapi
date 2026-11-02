@@ -30,27 +30,27 @@ tags:
       * `docx` - Microsoft Word Document
       * `pptx` - Microsoft PowerPoint Document
       * `xlsx` - Microsoft Excel Document
-      * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)
+      * `xlsm` - Microsoft Excel Macro-Enabled Workbook
       * `pdf` - Portable Document Format
       * `htm / html` - HTML Document
       * `txt` - Plain Text Document
       * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)
       * `srt` - SRT Document
-      * `vtt` - WebVTT Subtitle Document (currently in beta)
+      * `vtt` - WebVTT Subtitle Document
       * `idml` - Adobe InDesign Markup Language
       * `xml` - XML Document
       * `json` - JSON Document
-      * `yaml / yml` - YAML Document (currently in beta)
-      * `properties` - Java Properties Document (currently in beta)
-      * `strings` - iOS/macOS Strings Document (currently in beta)
-      * `md / markdown` - Markdown Document (currently in beta)
+      * `yaml / yml` - YAML Document
+      * `properties` - Java Properties Document
+      * `strings` - iOS/macOS Strings Document
+      * `md / markdown` - Markdown Document
       * `dita` - DITA topic (Darwin Information Typing Architecture)
       * `mif` - Adobe FrameMaker Interchange Format
-      * `zip` - SCORM Package (e-learning content, currently in beta)
-      * `odt` - OpenDocument Text Document (currently in beta)
-      * `rtf` - Rich Text Format Document (currently in beta)
-      * `resx` - .NET Resource Document (currently in beta)
-      * `jpeg` / `jpg` / `png` - Image (currently in beta)
+      * `zip` - SCORM Package (e-learning content)
+      * `odt` - OpenDocument Text Document
+      * `rtf` - Rich Text Format Document
+      * `resx` - .NET Resource Document
+      * `jpeg` / `jpg` / `png` - Image
 - name: RephraseText
   description: |-
     The `rephrase` endpoint  is used to make corrections and adjustments to texts based on style or tone.
@@ -1022,27 +1022,27 @@ paths:
                       * `docx` - Microsoft Word Document
                       * `pptx` - Microsoft PowerPoint Document
                       * `xlsx` - Microsoft Excel Document
-                      * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)
+                      * `xlsm` - Microsoft Excel Macro-Enabled Workbook
                       * `pdf` - Portable Document Format
                       * `htm / html` - HTML Document
                       * `txt` - Plain Text Document
                       * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)
                       * `srt` - SRT Document
-                      * `vtt` - WebVTT Subtitle Document (currently in beta)
+                      * `vtt` - WebVTT Subtitle Document
                       * `idml` - Adobe InDesign Markup Language
                       * `xml` - XML Document
                       * `json` - JSON Document
-                      * `yaml / yml` - YAML Document (currently in beta)
-                      * `properties` - Java Properties Document (currently in beta)
-                      * `strings` - iOS/macOS Strings Document (currently in beta)
-                      * `md / markdown` - Markdown Document (currently in beta)
+                      * `yaml / yml` - YAML Document
+                      * `properties` - Java Properties Document
+                      * `strings` - iOS/macOS Strings Document
+                      * `md / markdown` - Markdown Document
                       * `dita` - DITA topic (Darwin Information Typing Architecture)
                       * `mif` - Adobe FrameMaker Interchange Format
-                      * `zip` - SCORM Package (e-learning content, currently in beta)
-                      * `odt` - OpenDocument Text Document (currently in beta)
-                      * `rtf` - Rich Text Format Document (currently in beta)
-                      * `resx` - .NET Resource Document (currently in beta)
-                      * `jpeg` / `jpg` / `png` - Image (currently in beta)
+                      * `zip` - SCORM Package (e-learning content)
+                      * `odt` - OpenDocument Text Document
+                      * `rtf` - Rich Text Format Document
+                      * `resx` - .NET Resource Document
+                      * `jpeg` / `jpg` / `png` - Image
                 filename:
                   type: string
                   description: The name of the uploaded file. Can be used as an alternative
