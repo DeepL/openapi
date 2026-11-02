@@ -991,6 +991,12 @@ paths:
                   file: '@document.docx'
                   translation_memory_id: '[yourTranslationMemoryId]'
                   translation_memory_threshold: 75
+              CustomInstructions:
+                summary: Using Custom Instructions
+                value:
+                  target_lang: DE
+                  file: '@document.docx'
+                  custom_instructions: '["Use a friendly, diplomatic tone", "Keep sentences short"]'
               QualityEvaluation:
                 summary: Requesting a quality evaluation report (beta)
                 value:
@@ -1096,6 +1102,13 @@ paths:
                   $ref: '#/components/schemas/TranslationMemoryId'
                 translation_memory_threshold:
                   $ref: '#/components/schemas/TranslationMemoryThreshold'
+                custom_instructions:
+                  description: |-
+                    Specify a list of instructions to customize the translation behavior, as a JSON array of strings, for example `["Use a friendly, diplomatic tone"]`. Up to 10 custom instructions can be specified, each with a maximum of 300 characters.
+
+                    Rejected with `400` before the upload is accepted if the value is not a JSON array of strings or exceeds these limits.
+                  type: string
+                  example: '["Use a friendly, diplomatic tone"]'
                 style_profile_id:
                   description: |-
                     Translate with a [style profile](/api-reference/style-profiles/list-all-style-profiles): its glossaries,
@@ -1104,8 +1117,9 @@ paths:
                     style rule list for the target language, and the translation memories whose source language matches
                     the document. A component that does not fit the language pair is left out; this is not an error.
 
-                    Cannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id` or
-                    `translation_memory_threshold`. A request that combines them is rejected with `400 Bad Request`.
+                    Cannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,
+                    `translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected
+                    with `400 Bad Request`.
                     A style profile that does not exist or that your account cannot access is not rejected at upload:
                     the document status reports an error with the message `Style profile not found.`.
                   type: string
