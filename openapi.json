@@ -2187,7 +2187,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/GlossaryTargetLanguage"
+              "$ref": "#/components/schemas/MultilingualGlossaryTargetLanguage"
             }
           }
         ],
@@ -2282,7 +2282,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/GlossaryTargetLanguage"
+              "$ref": "#/components/schemas/MultilingualGlossaryTargetLanguage"
             }
           }
         ],
@@ -9769,7 +9769,7 @@
             "$ref": "#/components/schemas/GlossarySourceLanguage"
           },
           "target_lang": {
-            "$ref": "#/components/schemas/GlossaryTargetLanguage"
+            "$ref": "#/components/schemas/MultilingualGlossaryTargetLanguage"
           },
           "entries": {
             "$ref": "#/components/schemas/GlossaryEntries"
@@ -9893,6 +9893,57 @@
         ],
         "example": "de"
       },
+      "MultilingualGlossaryTargetLanguage": {
+        "type": "string",
+        "description": "The language in which the target texts in the dictionary are specified. Besides the base languages, the\ntarget can be one of these variants: `de-CH`, `de-DE`, `en-GB`, `en-US`, `es-419`, `es-ES`, `fr-CA`,\n`fr-FR`, `pt-BR`, `pt-PT`, `zh-Hans`, or `zh-Hant`. Source languages are always base languages. The current\nlist is returned by `GET /v3/languages?resource=glossary`.\n\nA dictionary with a base target, such as `de`, applies when translating into that language and any of its\nvariants. A dictionary with a variant target, such as `de-CH`, applies only when translating into that\nexact variant.\n\nWithin one glossary, each language family uses either the base language or its variants as targets, not\nboth. For example, `de-CH` and `de-DE` can be combined, but `de` and `de-DE` cannot. Adding a dictionary\nthat breaks this rule returns a 400 error.",
+        "enum": [
+          "ar",
+          "bg",
+          "cs",
+          "da",
+          "de",
+          "de-CH",
+          "de-DE",
+          "el",
+          "en",
+          "en-GB",
+          "en-US",
+          "es",
+          "es-419",
+          "es-ES",
+          "et",
+          "fi",
+          "fr",
+          "fr-CA",
+          "fr-FR",
+          "he",
+          "hu",
+          "id",
+          "it",
+          "ja",
+          "ko",
+          "lt",
+          "lv",
+          "nb",
+          "nl",
+          "pl",
+          "pt",
+          "pt-BR",
+          "pt-PT",
+          "ro",
+          "ru",
+          "sk",
+          "sl",
+          "sv",
+          "tr",
+          "uk",
+          "vi",
+          "zh",
+          "zh-Hans",
+          "zh-Hant"
+        ],
+        "example": "de"
+      },
       "SpokenTermsId": {
         "type": "string",
         "format": "uuid",
@@ -9990,7 +10041,7 @@
             "$ref": "#/components/schemas/GlossarySourceLanguage"
           },
           "target_lang": {
-            "$ref": "#/components/schemas/GlossaryTargetLanguage"
+            "$ref": "#/components/schemas/MultilingualGlossaryTargetLanguage"
           },
           "entries": {
             "$ref": "#/components/schemas/GlossaryEntries"
@@ -10018,7 +10069,7 @@
             "$ref": "#/components/schemas/GlossarySourceLanguage"
           },
           "target_lang": {
-            "$ref": "#/components/schemas/GlossaryTargetLanguage"
+            "$ref": "#/components/schemas/MultilingualGlossaryTargetLanguage"
           },
           "entry_count": {
             "$ref": "#/components/schemas/GlossaryEntryCount"
